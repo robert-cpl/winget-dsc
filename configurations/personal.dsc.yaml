@@ -14,6 +14,16 @@ properties:
         allowPrerelease: true
       settings:
         Ensure: Present
+    ###----------------TOOLS----------------###
+    ### Nilesoft Shell ###
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install Nilesoft Shell
+        allowPrerelease: true
+      settings:
+        id: Nilesoft.Shell
+        source: winget
+        Ensure: Present
     ### Postman ###
     - resource: Microsoft.WinGet.DSC/WinGetPackage
       directives:
@@ -59,6 +69,16 @@ properties:
         id: Microsoft.AzureDataStudio
         source: winget
         Ensure: Present
+    ### Azure Storage Explorer ###
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install Azure Storage Explorer
+        allowPrerelease: true
+      settings:
+        id: Microsoft.Azure.StorageExplorer
+        source: winget
+        Ensure: Present
+    ###----------------IDEs----------------###
     ### VS Code ###
     - resource: Microsoft.WinGet.DSC/WinGetPackage
       directives:
