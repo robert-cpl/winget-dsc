@@ -1,2 +1,2 @@
 # winget-config
-Holds the winget machine configuration to be used on a brand new OS installation .
+Holds the winget machine configuration to be used on a brand new OS installation.
