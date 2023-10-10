@@ -17,27 +17,35 @@ if (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]:
 }
 
 # modules
-$header = "https://raw.githubusercontent.com/RobertCopilau/winget-config/$($GitBranch)/configurations/modules/header.yaml"
-$footer = "https://raw.githubusercontent.com/RobertCopilau/winget-config/$($GitBranch)/configurations/modules/footer.yaml"
+$header = iwr -useb "https://raw.githubusercontent.com/RobertCopilau/winget-config/$($GitBranch)/configurations/modules/header.yaml"
+$headerContent = $header.Content
+$footer = iwr -useb "https://raw.githubusercontent.com/RobertCopilau/winget-config/$($GitBranch)/configurations/modules/footer.yaml"
+$footerContent = $footer.Content
 
 # dsc's
-$sharedConfig = "https://raw.githubusercontent.com/RobertCopilau/winget-config/$($GitBranch)/configurations/shared.yaml"
-$personalConfig = "https://raw.githubusercontent.com/RobertCopilau/winget-config/$($GitBranch)/configurations/personal.yaml"
-$workConfig = "https://raw.githubusercontent.com/RobertCopilau/winget-config/$($GitBranch)/configurations/work.yaml"
-
+$sharedConfig = iwr -useb "https://raw.githubusercontent.com/RobertCopilau/winget-config/$($GitBranch)/configurations/shared.yaml"
+$sharedConfigContent = $sharedConfig.Content
+$personalConfig = iwr -useb "https://raw.githubusercontent.com/RobertCopilau/winget-config/$($GitBranch)/configurations/personal.yaml"
+$personalConfigContent = $personalConfig.Content
+$workConfig = iwr -useb "https://raw.githubusercontent.com/RobertCopilau/winget-config/$($GitBranch)/configurations/work.yaml"
+$workConfigContent = $workConfig.Content
 
 If ($Type -match "pers") {
     echo "Using personal DSC configuration."
-    $configType = $personalConfig
+    $configType = $personalConfigContent
 } Else{
     echo "Using work DSC configuration."
-    $configType = $workConfig
+    $configType = $workConfigContent
 }
 
-Get-Content $header, $sharedConfig, $configType, $footer | Set-Content $configurationFilePath
+$headerContent, $sharedConfigContent, $configTypeCOntent, $footerContent | Set-Content -Path $configurationFilePath
 
 # if ($AutoApprove -eq $true) {
 #     winget configuration --file $configurationFilePath --accept-configuration-agreements
 # }else{
 #     winget configuration --file $configurationFilePath 
 # }
+
+sleep 5
+# Cleanup
+Remove-Item $configurationFilePath
