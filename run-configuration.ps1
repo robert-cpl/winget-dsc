@@ -1,10 +1,3 @@
-param(
-    [Parameter(Mandatory=$true)]
-    [string]$Type,
-    [Parameter(Mandatory=$false)]
-    $AutoApprove = $false,
-)
-
 # Local development variables
 $isLocalDevelopment = $false
 
