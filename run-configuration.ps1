@@ -9,7 +9,9 @@ param(
 )
 
 $configurationFolderPath = "./configurations"
+echo "Testing folder path to $configurationFolderPath."
 if (!(Test-Path $configurationFolderPath)) {
+    echo "Creating configuration folder to path $configurationFolderPath."
     New-Item -ItemType Directory -Path $configurationFolderPath
 }
 
