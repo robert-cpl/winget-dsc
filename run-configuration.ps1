@@ -1,3 +1,10 @@
+# Check for admin rights
+if (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
+    Write-Output "WinGet needs Administrator rights to run. Restarting in Admin mode..."
+    Start-Process -Verb runas -FilePath powershell.exe -ArgumentList "iwr -useb https://raw.githubusercontent.com/RobertCopilau/winget-config/main/run-configuration.ps1 | iex"
+    break
+}
+
 # Local development variables
 $isLocalDevelopment = $false
 
@@ -41,12 +48,6 @@ if (!(Test-Path $configurationFolderPath)) {
 
 $configurationFileName = "configuration.dsc.yaml"
 $configurationFilePath = "$configurationFolderPath/$configurationFileName"
-
-if (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
-    Write-Output "winget-config needs to be run as Administrator. Attempting to relaunch."
-    Start-Process -Verb runas -FilePath powershell.exe -ArgumentList "iwr -useb https://raw.githubusercontent.com/RobertCopilau/winget-config/main/run-configuration.ps1 | iex"
-    break
-}
 
 # Modules
 $fileFolderPath = if ($isLocalDevelopment) {"./configurations"} else {"https://raw.githubusercontent.com/RobertCopilau/winget-config/main/configurations"}
