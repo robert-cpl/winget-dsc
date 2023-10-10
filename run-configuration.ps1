@@ -1,19 +1,21 @@
-## Parameters
 param(
     [Parameter(Mandatory=$true)]
     [string]$Type,
     [Parameter(Mandatory=$false)]
     $AutoApprove = $false,
-    [Parameter(Mandatory=$false)]
-    [string]$GitBranch = "main"
 )
 
-# echo all parameters
-echo "Type: $Type"
-echo "AutoApprove: $AutoApprove"
-echo "GitBranch: $GitBranch"
+# Local development variables
+$isLocalDevelopment = $false
 
+# User Input
+$dscTypeUserInput = Read-Host "Enter DSC Type (personal/work) `r`nPress enter for default (personal):"
+$autoApproveUserInput Read-Host "DSC will be applied automatically. Do you want to continue? (y/n) `r`nPress enter for default (n):"
 
+$dscType = if ($dscTypeUserInput -eq "" -or $dscTypeUserInput -like "per") {"personal"} else {"work"}
+$autoApprove if ($autoApprove -eq "" -or $autoApprove -eq "y") {$false} else {$true}
+
+# Configuration file path setup
 $configurationFolderPath = "./configurations"
 if (!(Test-Path $configurationFolderPath)) {
     echo "Creating configuration folder to path $configurationFolderPath."
@@ -29,31 +31,33 @@ if (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]:
     break
 }
 
-# modules
-$header = iwr -useb "https://raw.githubusercontent.com/RobertCopilau/winget-config/$($GitBranch)/configurations/modules/header.yaml"
+# Modules
+$fileFolderPath = $isLocalDevelopment ? "./configurations" : "https://raw.githubusercontent.com/RobertCopilau/winget-config/main/configurations"
+$header = iwr -useb "$fileFolderPath/modules/header.yaml"
 $headerContent = $header.Content
-$footer = iwr -useb "https://raw.githubusercontent.com/RobertCopilau/winget-config/$($GitBranch)/configurations/modules/footer.yaml"
+$footer = iwr -useb "$fileFolderPath/modules/footer.yaml"
 $footerContent = $footer.Content
 
-# dsc's
-$sharedConfig = iwr -useb "https://raw.githubusercontent.com/RobertCopilau/winget-config/$($GitBranch)/configurations/shared.yaml"
+# DSC's
+$sharedConfig = iwr -useb "$fileFolderPath/shared.yaml"
 $sharedConfigContent = $sharedConfig.Content
-$personalConfig = iwr -useb "https://raw.githubusercontent.com/RobertCopilau/winget-config/$($GitBranch)/configurations/personal.yaml"
+$personalConfig = iwr -useb "$fileFolderPath/personal.yaml"
 $personalConfigContent = $personalConfig.Content
-$workConfig = iwr -useb "https://raw.githubusercontent.com/RobertCopilau/winget-config/$($GitBranch)/configurations/work.yaml"
+$workConfig = iwr -useb "$fileFolderPath/work.yaml"
 $workConfigContent = $workConfig.Content
 
-If ($Type -match "pers") {
+if ($dscType -eq "personal") {
     echo "Using personal DSC configuration."
     $configType = $personalConfigContent
-} Else{
+} else{
     echo "Using work DSC configuration."
     $configType = $workConfigContent
 }
 
+# Build the DSC configuration file
 $headerContent, $sharedConfigContent, $configTypeCOntent, $footerContent | Set-Content -Path $configurationFilePath
 
-# if ($AutoApprove -eq $true) {
+# if ($autoApprove -eq $true) {
 #     winget configuration --file $configurationFilePath --accept-configuration-agreements
 # }else{
 #     winget configuration --file $configurationFilePath 
