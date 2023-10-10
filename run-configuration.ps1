@@ -48,11 +48,11 @@ If ($Type -match "pers") {
 
 $headerContent, $sharedConfigContent, $configTypeCOntent, $footerContent | Set-Content -Path $configurationFilePath
 
-# if ($AutoApprove -eq $true) {
-#     winget configuration --file $configurationFilePath --accept-configuration-agreements
-# }else{
-#     winget configuration --file $configurationFilePath 
-# }
+if ($AutoApprove -eq $true) {
+    winget configuration --file $configurationFilePath --accept-configuration-agreements
+}else{
+    winget configuration --file $configurationFilePath 
+}
 
-# Cleanup
-# Remove-Item $configurationFilePath
+Cleanup
+Remove-Item $configurationFilePath
