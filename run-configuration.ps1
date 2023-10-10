@@ -3,7 +3,9 @@ param(
     [Parameter(Mandatory=$true)]
     [string]$Type,
     [Parameter(Mandatory=$false)]
-    $AutoApprove = $false
+    $AutoApprove = $false,
+    [Parameter(Mandatory=$false)]
+    [string]$GitBranch = "main"
 )
 
 $configurationFilePath = "./configurations/configuration.dsc.yaml"
@@ -15,13 +17,13 @@ if (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]:
 }
 
 # modules
-$header = "./configurations/modules/header.yaml"
-$footer = "./configurations/modules/footer.yaml"
+$header = "https://raw.githubusercontent.com/RobertCopilau/winget-config/$($GitBranch)/configurations/modules/header.yaml"
+$footer = "https://raw.githubusercontent.com/RobertCopilau/winget-config/$($GitBranch)/configurations/modules/footer.yaml"
 
 # dsc's
-$sharedConfig = "./configurations/shared.yaml"
-$personalConfig = "./configurations/personal.yaml"
-$workConfig = "./configurations/work.yaml"
+$sharedConfig = "https://raw.githubusercontent.com/RobertCopilau/winget-config/$($GitBranch)/configurations/shared.yaml"
+$personalConfig = "https://raw.githubusercontent.com/RobertCopilau/winget-config/$($GitBranch)/configurations/personal.yaml"
+$workConfig = "https://raw.githubusercontent.com/RobertCopilau/winget-config/$($GitBranch)/configurations/work.yaml"
 
 
 If ($Type -match "pers") {
