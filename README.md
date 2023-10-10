@@ -1,5 +1,6 @@
-# winget-config
-Holds the winget machine configuration to be used on a brand new OS installation.
-
+# About
+This is a PowerShell script that leverages the `winget configuration`  command to apply a custom profile to your Windows Installation.
+<br>The script will stitch together a winget configuration file based on the profile you chose.
 # Usage
-iwr -useb https://dsc.copilau.me | iex
+One line command: 
+<br>`iwr -useb https://dsc.copilau.me | iex`
