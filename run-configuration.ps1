@@ -25,7 +25,7 @@ if (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]:
 }
 
 # Modules
-$fileFolderPath = $isLocalDevelopment ? "./configurations" : "https://raw.githubusercontent.com/RobertCopilau/winget-config/main/configurations"
+$fileFolderPath = if ($isLocalDevelopment) {"./configurations"} else {"https://raw.githubusercontent.com/RobertCopilau/winget-config/main/configurations"}
 $header = iwr -useb "$fileFolderPath/modules/header.yaml"
 $headerContent = $header.Content
 $footer = iwr -useb "$fileFolderPath/modules/footer.yaml"
