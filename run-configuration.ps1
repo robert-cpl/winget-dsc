@@ -46,6 +46,5 @@ $headerContent, $sharedConfigContent, $configTypeCOntent, $footerContent | Set-C
 #     winget configuration --file $configurationFilePath 
 # }
 
-sleep 5
 # Cleanup
-Remove-Item $configurationFilePath
+# Remove-Item $configurationFilePath
