@@ -11,7 +11,7 @@ function GetUserInput {
 
     while ($true) {
         # User input
-        Write-Host "$message Press ↵ Enter ↵ for default value ($defaultValue)." -ForegroundColor Green
+        Write-Host "$message Press ENTER for default value ($defaultValue)." -ForegroundColor Green
         $userInput = Read-Host
 
         # Validation
