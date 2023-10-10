@@ -8,8 +8,13 @@ param(
     [string]$GitBranch = "main"
 )
 
+# echo all parameters
+echo "Type: $Type"
+echo "AutoApprove: $AutoApprove"
+echo "GitBranch: $GitBranch"
+
+
 $configurationFolderPath = "./configurations"
-echo "Testing folder path to $configurationFolderPath."
 if (!(Test-Path $configurationFolderPath)) {
     echo "Creating configuration folder to path $configurationFolderPath."
     New-Item -ItemType Directory -Path $configurationFolderPath
@@ -48,11 +53,11 @@ If ($Type -match "pers") {
 
 $headerContent, $sharedConfigContent, $configTypeCOntent, $footerContent | Set-Content -Path $configurationFilePath
 
-if ($AutoApprove -eq $true) {
-    winget configuration --file $configurationFilePath --accept-configuration-agreements
-}else{
-    winget configuration --file $configurationFilePath 
-}
+# if ($AutoApprove -eq $true) {
+#     winget configuration --file $configurationFilePath --accept-configuration-agreements
+# }else{
+#     winget configuration --file $configurationFilePath 
+# }
 
-Cleanup
-Remove-Item $configurationFilePath
+# Cleanup
+# Remove-Item $configurationFilePath
