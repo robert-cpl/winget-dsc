@@ -3,10 +3,10 @@ $isLocalDevelopment = $false
 
 # User Input
 $dscTypeUserInput = Read-Host "Enter DSC Type (personal/work) `r`nPress enter for default (personal):"
-$autoApproveUserInput Read-Host "DSC will be applied automatically. Do you want to continue? (y/n) `r`nPress enter for default (n):"
+$autoApproveUserInput = Read-Host "DSC will be applied automatically. Do you want to continue? (y/n) `r`nPress enter for default (n):"
 
 $dscType = if ($dscTypeUserInput -eq "" -or $dscTypeUserInput -like "per") {"personal"} else {"work"}
-$autoApprove if ($autoApprove -eq "" -or $autoApprove -eq "y") {$false} else {$true}
+$autoApprove = if ($autoApprove -eq "" -or $autoApprove -eq "y") {$false} else {$true}
 
 # Configuration file path setup
 $configurationFolderPath = "./configurations"
