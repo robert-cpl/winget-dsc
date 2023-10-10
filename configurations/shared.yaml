@@ -1,27 +1,10 @@
+    ###----------------Windows Features----------------###
+    ### Windows Devepoler Mode ###
     - resource: Microsoft.Windows.Developer/DeveloperMode
       directives:
         description: Enable Developer Mode
         allowPrerelease: true
       settings:
-        Ensure: Present
-    ###----------------Gaming----------------###
-    ### Steam ###
-    - resource: Microsoft.WinGet.DSC/WinGetPackage
-      directives:
-        description: Install Steam
-        allowPrerelease: true
-      settings:
-        id: Valve.Steam
-        source: winget
-        Ensure: Present
-    ### Epic Games Launcher ###
-    - resource: Microsoft.WinGet.DSC/WinGetPackage
-      directives:
-        description: Install Epic Games Launcher
-        allowPrerelease: true
-      settings:
-        id: EpicGames.EpicGamesLauncher
-        source: winget
         Ensure: Present
     ###----------------Browsers----------------###
     ### Brave ###
