@@ -8,7 +8,13 @@ param(
     [string]$GitBranch = "main"
 )
 
-$configurationFilePath = "./configurations/configuration.dsc.yaml"
+$configurationFolderPath = "./configurations"
+if (!(Test-Path $configurationFolderPath)) {
+    New-Item -ItemType Directory -Path $configurationFolderPath
+}
+
+$configurationFileName = "configuration.dsc.yaml"
+$configurationFilePath = "$configurationFolderPath/$configurationFileName"
 
 if (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
     Write-Output "winget-config needs to be run as Administrator. Attempting to relaunch."
