@@ -37,7 +37,6 @@ function GetUserInput {
 }
 
 $dscType = GetUserInput -message "What DSC configuration you want to use? (personal/work)." -choices ["personal", "work"] -defaultValue "personal"
-$autoApprove = GetUserInput -message "Do you want to automatically accept the configuration agreements? (y/n)." -choices ["y", "n"] -defaultValue "n"
 
 # Configuration file path setup
 $configurationFolderPath = "./configurations"
@@ -75,11 +74,7 @@ if ($dscType -eq "personal") {
 # Build the DSC configuration file
 $headerContent, $sharedConfigContent, $configTypeCOntent, $footerContent | Set-Content -Path $configurationFilePath
 
-if ($autoApprove -eq "y") {
-    winget configuration --file $configurationFilePath --accept-configuration-agreements
-}else{
-    winget configuration --file $configurationFilePath 
-}
+winget configuration --file $configurationFilePath 
 
-Cleanup
+#Cleanup
 Remove-Item $configurationFilePath
