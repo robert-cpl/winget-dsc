@@ -1,18 +1,37 @@
-# yaml-language-server: $schema=https://aka.ms/configuration-dsc-schema/0.2
-properties:
-  assertions:
-    - resource: Microsoft.Windows.Developer/OsVersion
-      directives:
-        description: Verify min OS version requirement
-        allowPrerelease: true
-      settings:
-        MinVersion: "10.0.22000"
-  resources:
     - resource: Microsoft.Windows.Developer/DeveloperMode
       directives:
         description: Enable Developer Mode
         allowPrerelease: true
       settings:
+        Ensure: Present
+    ###----------------Gaming----------------###
+    ### Steam ###
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install Steam
+        allowPrerelease: true
+      settings:
+        id: Valve.Steam
+        source: winget
+        Ensure: Present
+    ### Epic Games Launcher ###
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install Epic Games Launcher
+        allowPrerelease: true
+      settings:
+        id: EpicGames.EpicGamesLauncher
+        source: winget
+        Ensure: Present
+    ###----------------Browsers----------------###
+    ### Brave ###
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      directives:
+        description: Install Brave Browser
+        allowPrerelease: true
+      settings:
+        id: Brave.Brave
+        source: winget
         Ensure: Present
     ###----------------TOOLS----------------###
     ### Nilesoft Shell ###
@@ -88,33 +107,3 @@ properties:
         id: Microsoft.VisualStudioCode
         source: winget
         Ensure: Present
-    ### Visual Studio Community 2022 ###
-    - resource: Microsoft.WinGet.DSC/WinGetPackage
-      id: visualStudioPackage
-      directives:
-        description: Install Visual Studio 2022 Community
-        allowPrerelease: true
-      settings:
-        id: Microsoft.VisualStudio.2022.Community
-        source: winget
-        Ensure: Present
-    - resource: Microsoft.VisualStudio.DSC/VSComponents
-      dependsOn:
-        - visualStudioPackage
-      directives:
-        description: Install required VS workloads from vsconfig file
-        allowPrerelease: true
-      settings:
-        productId: Microsoft.VisualStudio.Product.Community
-        channelId: VisualStudio.17.Release
-        # vsconfig: ${WinGetConfigRoot}\..\.vsconfig
-        components:
-          [
-            "Microsoft.VisualStudio.Workload.CoreEditor",
-            "Microsoft.VisualStudio.Workload.Azure",
-            "Microsoft.VisualStudio.Workload.NetWeb",
-            "Microsoft.VisualStudio.Workload.Node",
-          ]
-        includeRecommended: true
-        includeOptional: false
-  configurationVersion: 0.2.0
