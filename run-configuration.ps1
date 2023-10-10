@@ -10,6 +10,10 @@ Write-Host "See full source code on GitHub @ https://github.com/robert-cpl/winge
 # Local development variables
 $isLocalDevelopment = $false
 
+# Variables
+$defaultDscProfile = "personal"
+$dscProfiles = @("personal", "developer")
+
 # User Input
 function GetUserInput {
     param(
@@ -38,10 +42,10 @@ function GetUserInput {
     return $userInput
 }
 
-$dscType = GetUserInput -message "What DSC profile you want to use? (personal/developer)." -choices ["personal", "developer"] -defaultValue "personal"
+$dscProfile = GetUserInput -message "What DSC profile you want to install? ($($dscProfiles -join '/' ))." -choices $dscProfiles -defaultValue $defaultDscProfile
 
 # Configuration file path setup
-$configurationFolderPath = "./configurations"
+$configurationFolderPath = "./winget-configuration"
 if (!(Test-Path $configurationFolderPath)) {
     Write-Host "Creating configuration folder at '$configurationFolderPath'."
     New-Item -ItemType Directory -Path $configurationFolderPath
@@ -65,17 +69,18 @@ $personalConfigContent = $personalConfig.Content
 $developerConfig = iwr -useb "$fileFolderPath/developer.yaml"
 $developerConfigContent = $developerConfig.Content
 
-if ($dscType -eq "personal") {
-    Write-Host "Using $dscType DSC configuration." -BackgroundColor Yellow
+if ($dscProfile -eq $defaultDscProfile) {
+    Write-Host "Using $dscProfile DSC configuration." -BackgroundColor Yellow
     $configType = $personalConfigContent
 } else{
-    Write-Host "Using $dscType DSC configuration." -BackgroundColor Yellow
+    Write-Host "Using $dscProfile DSC configuration." -BackgroundColor Yellow
     $configType = $developerConfigContent
 }
 
 # Build the DSC configuration file
 $headerContent, $sharedConfigContent, $configTypeCOntent, $footerContent | Set-Content -Path $configurationFilePath
 
+# Run the configuration
 winget configuration --file $configurationFilePath 
 
 #Cleanup
