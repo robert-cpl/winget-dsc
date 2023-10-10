@@ -2,11 +2,35 @@
 $isLocalDevelopment = $false
 
 # User Input
-$dscTypeUserInput = Read-Host "Enter DSC Type (personal/work) `r`nPress enter for default (personal):"
-$autoApproveUserInput = Read-Host "DSC will be applied automatically. Do you want to continue? (y/n) `r`nPress enter for default (n):"
+function GetUserInput {
+    param(
+        [string]$message,
+        [string[]]$choices,
+        [string]$defaultValue
+    )
 
-$dscType = if ($dscTypeUserInput -eq "" -or $dscTypeUserInput -like "per") {"personal"} else {"work"}
-$autoApprove = if ($autoApprove -eq "" -or $autoApprove -eq "y") {$false} else {$true}
+    while ($true) {
+        # User input
+        Write-Host "$message Press ↵ Enter ↵ for default value ($defaultValue)." -ForegroundColor Green
+        $userInput = Read-Host
+
+        # Validation
+        $userInput = $userInput.ToLower()
+        if ($userInput -eq "") {
+            return $defaultValue
+        }
+
+        if ($choices -notcontains $userInput) {
+            Write-Host "Invalid input, try again." -ForegroundColor Yellow
+            continue
+        }
+        break
+    }
+    return $userInput
+}
+
+$dscType = GetUserInput -message "What type of DSC do you want to use? (personal/work)." -choices ["personal", "work"] -defaultValue "personal"
+$autoApprove = GetUserInput -message "Do you want to automatically accept the configuration agreements? (y/n)." -choices ["y", "n"] -defaultValue "n"
 
 # Configuration file path setup
 $configurationFolderPath = "./configurations"
@@ -50,11 +74,11 @@ if ($dscType -eq "personal") {
 # Build the DSC configuration file
 $headerContent, $sharedConfigContent, $configTypeCOntent, $footerContent | Set-Content -Path $configurationFilePath
 
-# if ($autoApprove -eq $true) {
-#     winget configuration --file $configurationFilePath --accept-configuration-agreements
-# }else{
-#     winget configuration --file $configurationFilePath 
-# }
+if ($autoApprove -eq "y") {
+    winget configuration --file $configurationFilePath --accept-configuration-agreements
+}else{
+    winget configuration --file $configurationFilePath 
+}
 
-# Cleanup
-# Remove-Item $configurationFilePath
+Cleanup
+Remove-Item $configurationFilePath
