@@ -29,7 +29,7 @@ function GetUserInput {
     return $userInput
 }
 
-$dscType = GetUserInput -message "What type of DSC do you want to use? (personal/work)." -choices ["personal", "work"] -defaultValue "personal"
+$dscType = GetUserInput -message "What DSC configuration you want to use? (personal/work)." -choices ["personal", "work"] -defaultValue "personal"
 $autoApprove = GetUserInput -message "Do you want to automatically accept the configuration agreements? (y/n)." -choices ["y", "n"] -defaultValue "n"
 
 # Configuration file path setup
