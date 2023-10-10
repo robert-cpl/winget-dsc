@@ -36,7 +36,7 @@ function GetUserInput {
     return $userInput
 }
 
-$dscType = GetUserInput -message "What DSC configuration you want to use? (personal/work)." -choices ["personal", "work"] -defaultValue "personal"
+$dscType = GetUserInput -message "What DSC configuration you want to use? (personal/developer)." -choices ["personal", "developer"] -defaultValue "personal"
 
 # Configuration file path setup
 $configurationFolderPath = "./configurations"
@@ -60,15 +60,15 @@ $sharedConfig = iwr -useb "$fileFolderPath/shared.yaml"
 $sharedConfigContent = $sharedConfig.Content
 $personalConfig = iwr -useb "$fileFolderPath/personal.yaml"
 $personalConfigContent = $personalConfig.Content
-$workConfig = iwr -useb "$fileFolderPath/work.yaml"
-$workConfigContent = $workConfig.Content
+$developerConfig = iwr -useb "$fileFolderPath/developer.yaml"
+$developerConfigContent = $developerConfig.Content
 
 if ($dscType -eq "personal") {
-    echo "Using personal DSC configuration."
+    Write-Host "Using $dscType DSC configuration." -BackgroundColor Yellow
     $configType = $personalConfigContent
 } else{
-    echo "Using work DSC configuration."
-    $configType = $workConfigContent
+    Write-Host "Using $dscType DSC configuration." -BackgroundColor Yellow
+    $configType = $developerConfigContent
 }
 
 # Build the DSC configuration file
