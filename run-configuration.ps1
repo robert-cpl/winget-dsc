@@ -57,7 +57,7 @@ $configurationFileName = "configuration.dsc.yaml"
 $configurationFilePath = "$configurationFolderPath/$configurationFileName"
 
 # Modules
-$fileFolderPath = if ($isLocalDevelopment) {"./configurations"} else {"https://raw.githubusercontent.com/robert-cpl/winget-dsc/main/configurations"}
+$fileFolderPath = if ($isLocalDevelopment) {$configurationFolderPath} else {"https://raw.githubusercontent.com/robert-cpl/winget-dsc/main/configurations"}
 $header = iwr -useb "$fileFolderPath/modules/header.yaml"
 $headerContent = $header.Content
 $footer = iwr -useb "$fileFolderPath/modules/footer.yaml"
