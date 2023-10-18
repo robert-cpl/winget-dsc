@@ -5,7 +5,7 @@ if (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]:
     break
 }
 
-Write-Host "See full source code on GitHub @ https://github.com/robert-cpl/winget-dsc" -ForegroundColor Green
+Write-Host "See full source code on GitHub @ https://github.com/robert-cpl/winget-dsc" -ForegroundColor Yellow
 
 # Variables
 $defaultDscProfile = "personal"
@@ -92,3 +92,10 @@ $headerContent, $sharedConfigContent, $configTypeContent, $footerContent | Set-C
 
 # Run the configuration
 winget configuration --file $configurationFilePath 
+
+# Catch errors
+if ($LASTEXITCODE -ne 0) {
+    Write-Host "Error running the configuration. See the error message above." -ForegroundColor Red
+    Read-Host -Prompt "Press ENTER to exit."
+    exit $LASTEXITCODE
+}
