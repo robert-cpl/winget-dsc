@@ -61,29 +61,34 @@ function GetContent(){
         [string]$indentation = ''
     )
     $content = iwr -useb $filePath
-    $contentContent = $content.Content -replace '^', $indentation
+    # add indentation to each line
+    $contentContent = $content.Content -replace '(?m)^', $indentation
+
     return $contentContent
 }
 
+$twoSpacesIndentation = '  '
+$fourSpacesIndentation = '    '
+
 $fileFolderPath = "https://raw.githubusercontent.com/robert-cpl/winget-dsc/main/configurations"
 $headerContent = GetContent -filePath "$fileFolderPath/modules/header.yaml"
-$footerContent = GetContent -filePath "$fileFolderPath/modules/footer.yaml" -indentation '  '
+$footerContent = GetContent -filePath "$fileFolderPath/modules/footer.yaml" -indentation $twoSpacesIndentation
 
 # DSC's
-$sharedConfigContent = GetContent -filePath "$fileFolderPath/shared.yaml" -indentation '    '
-$personalConfigContent = GetContent -filePath "$fileFolderPath/personal.yaml" -indentation '    '
-$developerConfigContent = GetContent -filePath "$fileFolderPath/developer.yaml" -indentation '    '
+$sharedConfigContent = GetContent -filePath "$fileFolderPath/shared.yaml" -indentation $fourSpacesIndentation
+$personalConfigContent = GetContent -filePath "$fileFolderPath/personal.yaml" -indentation $fourSpacesIndentation
+$developerConfigContent = GetContent -filePath "$fileFolderPath/developer.yaml" -indentation $fourSpacesIndentation
 
 if ($dscProfile -eq $defaultDscProfile) {
     Write-Host "Using $dscProfile DSC configuration." -BackgroundColor Yellow
-    $configType = $personalConfigContent
+    $configTypeContent = $personalConfigContent
 } else{
     Write-Host "Using $dscProfile DSC configuration." -BackgroundColor Yellow
-    $configType = $developerConfigContent
+    $configTypeContent = $developerConfigContent
 }
 
 # Build the DSC configuration file
-$headerContent, $sharedConfigContent, $configTypeCOntent, $footerContent | Set-Content -Path $configurationFilePath
+$headerContent, $sharedConfigContent, $configTypeContent, $footerContent | Set-Content -Path $configurationFilePath
 
 # Run the configuration
 winget configuration --file $configurationFilePath 
