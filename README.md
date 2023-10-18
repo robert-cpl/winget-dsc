@@ -14,11 +14,11 @@ An assortment of examples for the resources that are available to execute in the
 - resource: PSDscResources/Script
   id: psscript
   directives:
-    description: Create folder if it does not exist
+    description: Create file with PowerShell
   settings:
     GetScript: |
         $fileContent = $null
-        $filePath = "C:\Users\rober\Desktop\test.txt"  
+        $filePath = "C:\Users\user\Desktop\test.txt"  
         if (Test-Path -Path $filePath) {
             $fileContent = Get-Content -Path $filePath -Raw
         }  
@@ -27,7 +27,7 @@ An assortment of examples for the resources that are available to execute in the
         }
     TestScript: |
         $fileContent = $null
-        $filePath = "C:\Users\rober\Desktop\test.txt"
+        $filePath = "C:\Users\user\Desktop\test.txt"
         if (Test-Path -Path $filePath) {
             $fileContent = Get-Content -Path $filePath -Raw
             return ($fileContent -eq $FileContent)
@@ -36,7 +36,7 @@ An assortment of examples for the resources that are available to execute in the
         }
     SetScript: |
         $fileContent = "Hello World!"
-        $filePath = "C:\Users\rober\Desktop\test.txt"
+        $filePath = "C:\Users\user\Desktop\test.txt"
         $streamWriter = New-Object -TypeName 'System.IO.StreamWriter' -ArgumentList @(
             $filePath
         )
