@@ -1,30 +1,163 @@
-    ###----------------IDEs----------------###
-    ### Visual Studio Professional 2022 ###
-    - resource: Microsoft.WinGet.DSC/WinGetPackage
-      id: visualStudioPackage
-      directives:
-        description: Install Visual Studio Professional
-        allowPrerelease: true
-      settings:
-        id: Microsoft.VisualStudio.2022.Professional
-        source: winget
-        Ensure: Present
-    - resource: Microsoft.VisualStudio.DSC/VSComponents
-      dependsOn:
-        - visualStudioPackage
-      directives:
-        description: Install required VS workloads from vsconfig file
-        allowPrerelease: true
-      settings:
-        productId: Microsoft.VisualStudio.Product.Community
-        channelId: VisualStudio.17.Release
-        # vsconfig: ${WinGetConfigRoot}\..\.vsconfig
-        components:
-          [
-            "Microsoft.VisualStudio.Workload.CoreEditor",
-            "Microsoft.VisualStudio.Workload.Azure",
-            "Microsoft.VisualStudio.Workload.NetWeb",
-            "Microsoft.VisualStudio.Workload.Node",
-          ]
-        includeRecommended: true
-        includeOptional: false
+###----------------Tools----------------###
+### 1Password ###
+- resource: Microsoft.WinGet.DSC/WinGetPackage
+  directives:
+    description: Install 1Password
+    allowPrerelease: true
+  settings:
+    id: AgileBits.1Password
+    source: winget
+    Ensure: Present
+### k9s ###
+- resource: Microsoft.WinGet.DSC/WinGetPackage
+  id: k9s
+  directives:
+    description: Install k9s
+    allowPrerelease: true
+  settings:
+    id: Derailed.k9s
+    source: winget
+    Ensure: Present
+### Docker ###
+- resource: Microsoft.WinGet.DSC/WinGetPackage
+  id: dockerDesktop
+  directives:
+    description: Install Docker
+    allowPrerelease: true
+  settings:
+    id: Docker.DockerDesktop
+    source: winget
+    Ensure: Present
+### Kubernetes CLI ###
+- resource: Microsoft.WinGet.DSC/WinGetPackage
+  id: kubectl
+  directives:
+    description: Install kubectl
+    allowPrerelease: true
+  settings:
+    id: Kubernetes.kubectl
+    source: winget
+    Ensure: Present
+### SQL Server Management Studio ###
+- resource: Microsoft.WinGet.DSC/WinGetPackage
+  id: ssms
+  directives:
+    description: Install SQL Server Management Studio
+    allowPrerelease: true
+  settings:
+    id: Microsoft.SQLServerManagementStudio
+    source: winget
+    Ensure: Present
+### SQL Server 2022 Developer ###
+- resource: Microsoft.WinGet.DSC/WinGetPackage
+  id: sqlServer
+  directives:
+    description: Install SQL Server 2022 Developer
+    allowPrerelease: true
+  settings:
+    id: Microsoft.SQLServer.2022.Developer
+    source: winget
+    Ensure: Present
+### WSL ###
+- resource: PSDscResources/Script
+  id: wslInstall
+  directives:
+    description: Install WSL
+  settings:
+    GetScript: |
+      $wslCommand = Get-Command wsl.exe -ErrorAction SilentlyContinue
+      return @{
+          Result = $wslCommand
+      }
+    TestScript: |
+      $wslCommand = Get-Command wsl.exe -ErrorAction SilentlyContinue
+      if ($wslCommand -eq $null) {
+          return $false
+      }else {
+          return $true
+      }
+    SetScript: |
+      Enable-WindowsOptionalFeature -Online -FeatureName Microsoft-Windows-Subsystem-Linux -NoRestart
+      wsl --install
+###----------------Communication----------------###
+### Slack ###
+- resource: Microsoft.WinGet.DSC/WinGetPackage
+  directives:
+    description: Install Slack
+    allowPrerelease: true
+  settings:
+    id: SlackTechnologies.Slack
+    source: winget
+    Ensure: Present
+###----------------IDEs----------------###
+### Visual Studio Professional 2022 ###
+- resource: Microsoft.WinGet.DSC/WinGetPackage
+  id: visualStudioPackage
+  directives:
+    description: Install Visual Studio Professional
+    allowPrerelease: true
+  settings:
+    id: Microsoft.VisualStudio.2022.Professional
+    source: winget
+    Ensure: Present
+- resource: Microsoft.VisualStudio.DSC/VSComponents
+  dependsOn:
+    - visualStudioPackage
+  directives:
+    description: Install required VS workloads from vsconfig file
+    allowPrerelease: true
+  settings:
+    productId: Microsoft.VisualStudio.Product.Community
+    channelId: VisualStudio.17.Release
+    # vsconfig: ${WinGetConfigRoot}\..\.vsconfig
+    components:
+      [
+        "Microsoft.VisualStudio.Workload.CoreEditor",
+        "Microsoft.VisualStudio.Workload.Azure",
+        "Microsoft.VisualStudio.Workload.NetWeb",
+        "Microsoft.VisualStudio.Workload.Node",
+      ]
+    includeRecommended: true
+    includeOptional: false
+
+###----------------Debloat----------------###
+### Remove pre-installed Windows apps ###
+- resource: PSDscResources/Script
+  id: debloatScript
+  directives:
+    description: Remove pre-installed apps
+  settings:
+    GetScript: |
+      $appsList = @("Microsoft.MicrosoftSolitaireCollection", "Clipchamp.Clipchamp")
+
+      $foundApps = @()
+      foreach ($app in $appsList) {
+          $foundApp = Get-AppxPackage -Name $app
+
+          if ($foundApp -ne $null) {
+              $foundApps += $foundApp
+          }
+      }
+
+      return @{
+          Result = $foundApps
+      }
+    TestScript: |
+      $appsList = @("Microsoft.MicrosoftSolitaireCollection", "Clipchamp.Clipchamp")
+
+      foreach ($app in $appsList) {
+          $foundApp = Get-AppxPackage -Name $app
+
+          if ($foundApp -ne $null) {
+              return $false
+          }
+      }
+
+      return $true
+    SetScript: |
+      $appsList = @("Microsoft.MicrosoftSolitaireCollection", "Clipchamp.Clipchamp")
+
+      foreach ($app in $appsList) {
+          # Remove installed app for all existing users
+          Get-AppxPackage -Name $app -AllUsers | Remove-AppxPackage
+      }
