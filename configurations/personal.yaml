@@ -1,6 +1,7 @@
 ###----------------Gaming----------------###
 ### Steam ###
 - resource: Microsoft.WinGet.DSC/WinGetPackage
+  id: Steam
   directives:
     description: Install Steam
     allowPrerelease: true
@@ -10,6 +11,7 @@
     Ensure: Present
 ### Epic Games Launcher ###
 - resource: Microsoft.WinGet.DSC/WinGetPackage
+  id: EpicGamesLauncher
   directives:
     description: Install Epic Games Launcher
     allowPrerelease: true
@@ -20,7 +22,7 @@
 ###----------------IDEs----------------###
 ### Visual Studio Community 2022 ###
 - resource: Microsoft.WinGet.DSC/WinGetPackage
-  id: visualStudioPackage
+  id: VisualStudio2022Community
   directives:
     description: Install Visual Studio 2022 Community
     allowPrerelease: true
@@ -29,8 +31,9 @@
     source: winget
     Ensure: Present
 - resource: Microsoft.VisualStudio.DSC/VSComponents
+  id: VisualStudio2022CommunityComponents
   dependsOn:
-    - visualStudioPackage
+    - VisualStudio2022Community
   directives:
     description: Install required VS workloads from vsconfig file
     allowPrerelease: true

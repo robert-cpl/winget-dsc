@@ -1,6 +1,7 @@
 ###----------------Windows Features----------------###
 ### Windows Devepoler Mode ###
 - resource: Microsoft.Windows.Developer/DeveloperMode
+  id: DeveloperMode
   directives:
     description: Enable Developer Mode
     allowPrerelease: true
@@ -9,6 +10,7 @@
 ###----------------Browsers----------------###
 ### Brave ###
 - resource: Microsoft.WinGet.DSC/WinGetPackage
+  id: BraveBrowser
   directives:
     description: Install Brave Browser
     allowPrerelease: true
@@ -19,6 +21,7 @@
 ###----------------Communication----------------###
 ### Telegram ###
 - resource: Microsoft.WinGet.DSC/WinGetPackage
+  id: Telegram
   directives:
     description: Install Telegram
     allowPrerelease: true
@@ -29,6 +32,7 @@
 ###----------------Multimedia----------------###
 ### Spotify ###
 - resource: Microsoft.WinGet.DSC/WinGetPackage
+  id: Spotify
   directives:
     description: Install Spotify
     allowPrerelease: true
@@ -37,8 +41,19 @@
     source: winget
     Ensure: Present
 ###----------------TOOLS----------------###
+### 1Password ###
+- resource: Microsoft.WinGet.DSC/WinGetPackage
+  id: 1Password
+  directives:
+    description: Install 1Password
+    allowPrerelease: true
+  settings:
+    id: AgileBits.1Password
+    source: winget
+    Ensure: Present
 ### Nilesoft Shell ###
 - resource: Microsoft.WinGet.DSC/WinGetPackage
+  id: NilesoftShell
   directives:
     description: Install Nilesoft Shell
     allowPrerelease: true
@@ -48,6 +63,7 @@
     Ensure: Present
 ### Postman ###
 - resource: Microsoft.WinGet.DSC/WinGetPackage
+  id: Postman
   directives:
     description: Install Postman
     allowPrerelease: true
@@ -57,6 +73,7 @@
     Ensure: Present
 ### Git ###
 - resource: Microsoft.WinGet.DSC/WinGetPackage
+  id: Git
   directives:
     description: Install Git
     allowPrerelease: true
@@ -66,6 +83,7 @@
     Ensure: Present
 ### Fork ###
 - resource: Microsoft.WinGet.DSC/WinGetPackage
+  id: Fork
   directives:
     description: Install Fork
     allowPrerelease: true
@@ -75,6 +93,7 @@
     Ensure: Present
 ### Azure CLI ###
 - resource: Microsoft.WinGet.DSC/WinGetPackage
+  id: AzureCli
   directives:
     description: Install Azure CLI
     allowPrerelease: true
@@ -84,7 +103,7 @@
     Ensure: Present
 ### Choco ###
 - resource: Microsoft.WinGet.DSC/WinGetPackage
-  id: chocoCli
+  id: Chocolatey
   directives:
     description: Install Choco
     allowPrerelease: true
@@ -94,6 +113,7 @@
     Ensure: Present
 ### Azure Data Studio ###
 - resource: Microsoft.WinGet.DSC/WinGetPackage
+  id: AzureDataStudio
   directives:
     description: Install Azure Data Studio
     allowPrerelease: true
@@ -103,6 +123,7 @@
     Ensure: Present
 ### Azure Storage Explorer ###
 - resource: Microsoft.WinGet.DSC/WinGetPackage
+  id: AzureStorageExplorer
   directives:
     description: Install Azure Storage Explorer
     allowPrerelease: true
@@ -112,6 +133,7 @@
     Ensure: Present
 ### Cloudflare WARP ###
 - resource: Microsoft.WinGet.DSC/WinGetPackage
+  id: CloudflareWARP
   directives:
     description: Install Cloudflare WARP
     allowPrerelease: true
@@ -121,6 +143,7 @@
     Ensure: Present
 ### Node.js ###
 - resource: Microsoft.WinGet.DSC/WinGetPackage
+  id: Nodejs
   directives:
     description: Install Node.js
     allowPrerelease: true
@@ -130,6 +153,7 @@
     Ensure: Present
 ### Obsidian ###
 - resource: Microsoft.WinGet.DSC/WinGetPackage
+  id: Obsidian
   directives:
     description: Install Obsidian
     allowPrerelease: true
@@ -140,6 +164,7 @@
 ###----------------IDEs----------------###
 ### VS Code ###
 - resource: Microsoft.WinGet.DSC/WinGetPackage
+  id: VisualStudioCode
   directives:
     description: Install Visual Studio Code
     allowPrerelease: true

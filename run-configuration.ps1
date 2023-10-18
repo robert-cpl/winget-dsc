@@ -80,10 +80,10 @@ $personalConfigContent = GetContent -filePath "$fileFolderPath/personal.yaml" -i
 $developerConfigContent = GetContent -filePath "$fileFolderPath/developer.yaml" -indentation $fourSpacesIndentation
 
 if ($dscProfile -eq $defaultDscProfile) {
-    Write-Host "Using $dscProfile DSC configuration." -BackgroundColor Yellow
+    Write-Host "Using $dscProfile DSC configuration." -ForegroundColor Yellow
     $configTypeContent = $personalConfigContent
 } else{
-    Write-Host "Using $dscProfile DSC configuration." -BackgroundColor Yellow
+    Write-Host "Using $dscProfile DSC configuration." -ForegroundColor Yellow
     $configTypeContent = $developerConfigContent
 }
 
