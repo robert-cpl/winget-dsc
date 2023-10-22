@@ -18,6 +18,16 @@
     id: Brave.Brave
     source: winget
     Ensure: Present
+### Thorium ###
+- resource: Microsoft.WinGet.DSC/WinGetPackage
+  id: ThoriumBrowser
+  directives:
+    description: Install Thorium Browser
+    allowPrerelease: true
+  settings:
+    id: Alex313031.Thorium
+    source: winget
+    Ensure: Present
 ###----------------Communication----------------###
 ### Telegram ###
 - resource: Microsoft.WinGet.DSC/WinGetPackage
