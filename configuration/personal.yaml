@@ -19,6 +19,17 @@
     id: EpicGames.EpicGamesLauncher
     source: winget
     Ensure: Present
+###----------------Communication----------------###
+### Teams ###
+- resource: Microsoft.WinGet.DSC/WinGetPackage
+  id: Teams
+  directives:
+    description: Install Teams
+    allowPrerelease: true
+  settings:
+    id: Microsoft.Teams
+    source: winget
+    Ensure: Present
 ###----------------IDEs----------------###
 ### Visual Studio Community 2022 ###
 - resource: Microsoft.WinGet.DSC/WinGetPackage
@@ -40,7 +51,6 @@
   settings:
     productId: Microsoft.VisualStudio.Product.Community
     channelId: VisualStudio.17.Release
-    # vsconfig: ${WinGetConfigRoot}\..\.vsconfig
     components:
       [
         "Microsoft.VisualStudio.Workload.CoreEditor",

@@ -102,7 +102,6 @@
   settings:
     productId: Microsoft.VisualStudio.Product.Professional
     channelId: VisualStudio.17.Release
-    # vsconfig: ${WinGetConfigRoot}\..\.vsconfig
     components:
       [
         "Microsoft.VisualStudio.Workload.CoreEditor",

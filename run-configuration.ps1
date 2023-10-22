@@ -7,11 +7,10 @@ if (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]:
 
 Write-Host "See full source code on GitHub @ https://github.com/robert-cpl/winget-dsc" -ForegroundColor Yellow
 
-# Variables
-$defaultDscProfile = "personal"
-$dscProfiles = @("personal", "developer")
+# Check if running locally so we can use the local files
+$runLocally = if (Test-Path ".gitignore") { $true } else { $false }
 
-# User Input
+# Functions
 function GetUserInput {
     param(
         [string]$message,
@@ -39,6 +38,12 @@ function GetUserInput {
     return $userInput
 }
 
+# Variables
+$defaultDscProfile = "personal"
+$dscProfiles = @("personal", "developer")
+
+# User Input
+
 $dscProfile = GetUserInput -message "What DSC profile you want to install? ($($dscProfiles -join '/' ))." -choices $dscProfiles -defaultValue $defaultDscProfile
 
 # Configuration file path setup
@@ -58,9 +63,15 @@ $configurationFilePath = "$configurationFolderPath/$configurationFileName"
 function GetContent(){
     param(
         [string]$filePath,
-        [string]$indentation = ''
+        [string]$indentation = '',
+        [bool]$runLocally = $true
     )
-    $content = iwr -useb $filePath
+    if ($runLocally) {
+        $fileName = Split-Path -Path $filePath -Leaf
+        $filePath = ".\configuration\modules\$fileName"
+    }
+    $content = Invoke-WebRequest -useb $filePath
+
     # add indentation to each line
     $contentContent = $content.Content -replace '(?m)^', $indentation
 
@@ -70,14 +81,14 @@ function GetContent(){
 $twoSpacesIndentation = '  '
 $fourSpacesIndentation = '    '
 
-$fileFolderPath = "https://raw.githubusercontent.com/robert-cpl/winget-dsc/main/configurations"
-$headerContent = GetContent -filePath "$fileFolderPath/modules/header.yaml"
-$footerContent = GetContent -filePath "$fileFolderPath/modules/footer.yaml" -indentation $twoSpacesIndentation
+$fileFolderPath = "https://raw.githubusercontent.com/robert-cpl/winget-dsc/main/configuration"
+$headerContent = GetContent -filePath "$fileFolderPath/modules/header.yaml" -runLocally $runLocally
+$footerContent = GetContent -filePath "$fileFolderPath/modules/footer.yaml" -indentation $twoSpacesIndentation -runLocally $runLocally
 
 # DSC's
-$sharedConfigContent = GetContent -filePath "$fileFolderPath/shared.yaml" -indentation $fourSpacesIndentation
-$personalConfigContent = GetContent -filePath "$fileFolderPath/personal.yaml" -indentation $fourSpacesIndentation
-$developerConfigContent = GetContent -filePath "$fileFolderPath/developer.yaml" -indentation $fourSpacesIndentation
+$sharedConfigContent = GetContent -filePath "$fileFolderPath/shared.yaml" -indentation $fourSpacesIndentation -runLocally $runLocally
+$personalConfigContent = GetContent -filePath "$fileFolderPath/personal.yaml" -indentation $fourSpacesIndentation -runLocally $runLocally
+$developerConfigContent = GetContent -filePath "$fileFolderPath/developer.yaml" -indentation $fourSpacesIndentation -runLocally $runLocally
 
 if ($dscProfile -eq $defaultDscProfile) {
     Write-Host "Using $dscProfile DSC configuration." -ForegroundColor Yellow
@@ -99,3 +110,5 @@ if ($LASTEXITCODE -ne 0) {
     Read-Host -Prompt "Press ENTER to exit."
     exit $LASTEXITCODE
 }
+
+Read-Host "Configuration completed. Press ENTER to exit."
