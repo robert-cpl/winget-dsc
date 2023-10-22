@@ -112,3 +112,20 @@ if ($LASTEXITCODE -ne 0) {
 }
 
 Read-Host "Configuration completed. Press ENTER to exit."
+
+
+[void] [System.Reflection.Assembly]::LoadWithPartialName("System.Windows.Forms")
+[void] [System.Reflection.Assembly]::LoadWithPartialName("System.Drawing") 
+
+$objForm = New-Object Windows.Forms.Form 
+
+$horizontalResolution = $(wmic PATH Win32_VideoController GET CurrentHorizontalResolution)[2].Trim()
+$verticalResolution = $(wmic PATH Win32_VideoController GET CurrentVerticalResolution)[2].Trim()
+
+$objForm.Width = $horizontalResolution / 1.5
+$objForm.Height = $verticalResolution / 1.5
+
+$objForm.StartPosition = "CenterScreen"
+$objForm.Text = "Desired State Configuration" 
+
+[void] $objForm.ShowDialog() 
