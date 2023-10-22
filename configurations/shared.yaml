@@ -8,16 +8,6 @@
   settings:
     Ensure: Present
 ###----------------Browsers----------------###
-### Brave ###
-- resource: Microsoft.WinGet.DSC/WinGetPackage
-  id: BraveBrowser
-  directives:
-    description: Install Brave Browser
-    allowPrerelease: true
-  settings:
-    id: Brave.Brave
-    source: winget
-    Ensure: Present
 ### Thorium ###
 - resource: Microsoft.WinGet.DSC/WinGetPackage
   id: ThoriumBrowser
