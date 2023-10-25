@@ -161,6 +161,16 @@
     id: Obsidian.Obsidian
     source: winget
     Ensure: Present
+### Terraform ###
+- resource: Microsoft.WinGet.DSC/WinGetPackage
+  id: Terraform
+  directives:
+    description: Install Terraform
+    allowPrerelease: true
+  settings:
+    id: HashiCorp.Terraform
+    source: winget
+    Ensure: Present
 ###----------------IDEs----------------###
 ### VS Code ###
 - resource: Microsoft.WinGet.DSC/WinGetPackage
