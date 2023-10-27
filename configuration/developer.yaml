@@ -1,4 +1,14 @@
 ###----------------Tools----------------###
+### Azure Function Core Tools ###
+- resource: Microsoft.WinGet.DSC/WinGetPackage
+  id: AzureFunctionsCoreTools
+  directives:
+    description: Install Azure Functions Core Tools
+    allowPrerelease: true
+  settings:
+    id: Microsoft.Azure.FunctionsCoreTools
+    source: winget
+    Ensure: Present
 ### k9s ###
 - resource: Microsoft.WinGet.DSC/WinGetPackage
   id: k9s
