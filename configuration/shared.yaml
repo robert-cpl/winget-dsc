@@ -1,5 +1,51 @@
-###----------------Windows Features----------------###
-### Windows Devepoler Mode ###
+- resource: PSDscResources/Script
+  id: WindowsDebloatScript
+  directives:
+    description: Remove pre-installed apps
+  settings:
+    GetScript: |
+      $appsList = @("Microsoft.MicrosoftSolitaireCollection", "Clipchamp.Clipchamp", "MicrosoftTeams", "Microsoft.BingNews", "Microsoft.People", "Microsoft.PowerAutomateDesktop", "SpotifyAB.SpotifyMusic")
+
+      $foundApps = @()
+      foreach ($app in $appsList) {
+          $foundApp = Get-AppxPackage -AllUsers -Name $app
+
+          if ($foundApp -ne $null) {
+              $foundApps += $foundApp
+          }
+      }
+
+      return @{
+          Result = $foundApps
+      }
+    TestScript: |
+      $appsList = @("Microsoft.MicrosoftSolitaireCollection", "Clipchamp.Clipchamp", "MicrosoftTeams", "Microsoft.BingNews", "Microsoft.People", "Microsoft.PowerAutomateDesktop", "SpotifyAB.SpotifyMusic")
+
+      foreach ($app in $appsList) {
+          $foundApp = Get-AppxPackage -Name $app
+
+          if ($foundApp -ne $null) {
+              return $false
+          }
+      }
+
+      return $true
+    SetScript: |
+      $appsList = @("Microsoft.MicrosoftSolitaireCollection", "Clipchamp.Clipchamp", "MicrosoftTeams", "Microsoft.BingNews", "Microsoft.People", "Microsoft.PowerAutomateDesktop", "SpotifyAB.SpotifyMusic")
+
+      foreach ($app in $appsList) {
+          # Remove installed app for all existing users
+          Get-AppxPackage -Name $app -AllUsers | Remove-AppxPackage
+      }
+
+      function unpin_taskbar([string]$appname) {
+          ((New-Object -Com Shell.Application).NameSpace('shell:::{4234d49b-0245-4df3-b780-3893943456e1}').Items() `
+          | Where-Object{$_.Name -eq $appname}).Verbs() | Where-Object{$_.Name.replace('&','') -match 'Unpin from taskbar'} `
+          | ForEach-Object{$_.DoIt()}
+      }
+
+      unpin_taskbar('Microsoft Store')
+
 - resource: Microsoft.Windows.Developer/DeveloperMode
   id: DeveloperMode
   directives:
@@ -7,8 +53,6 @@
     allowPrerelease: true
   settings:
     Ensure: Present
-###----------------Browsers----------------###
-### Thorium ###
 - resource: Microsoft.WinGet.DSC/WinGetPackage
   id: ThoriumBrowser
   directives:
@@ -18,8 +62,6 @@
     id: Alex313031.Thorium
     source: winget
     Ensure: Present
-###----------------Communication----------------###
-### Telegram ###
 - resource: Microsoft.WinGet.DSC/WinGetPackage
   id: Telegram
   directives:
@@ -29,19 +71,6 @@
     id: Telegram.TelegramDesktop
     source: winget
     Ensure: Present
-###----------------Multimedia----------------###
-### Spotify ###
-- resource: Microsoft.WinGet.DSC/WinGetPackage
-  id: Spotify
-  directives:
-    description: Install Spotify
-    allowPrerelease: true
-  settings:
-    id: Spotify.Spotify
-    source: winget
-    Ensure: Present
-###----------------TOOLS----------------###
-### 1Password ###
 - resource: Microsoft.WinGet.DSC/WinGetPackage
   id: 1Password
   directives:
@@ -51,7 +80,6 @@
     id: AgileBits.1Password
     source: winget
     Ensure: Present
-### Nilesoft Shell ###
 - resource: Microsoft.WinGet.DSC/WinGetPackage
   id: NilesoftShell
   directives:
@@ -61,7 +89,6 @@
     id: Nilesoft.Shell
     source: winget
     Ensure: Present
-### Postman ###
 - resource: Microsoft.WinGet.DSC/WinGetPackage
   id: Postman
   directives:
@@ -71,7 +98,6 @@
     id: Postman.Postman
     source: winget
     Ensure: Present
-### Git ###
 - resource: Microsoft.WinGet.DSC/WinGetPackage
   id: Git
   directives:
@@ -81,7 +107,6 @@
     id: Git.Git
     source: winget
     Ensure: Present
-### Fork ###
 - resource: Microsoft.WinGet.DSC/WinGetPackage
   id: Fork
   directives:
@@ -91,7 +116,6 @@
     id: Fork.Fork
     source: winget
     Ensure: Present
-### Azure CLI ###
 - resource: Microsoft.WinGet.DSC/WinGetPackage
   id: AzureCli
   directives:
@@ -101,7 +125,6 @@
     id: Microsoft.AzureCLI
     source: winget
     Ensure: Present
-### Choco ###
 - resource: Microsoft.WinGet.DSC/WinGetPackage
   id: Chocolatey
   directives:
@@ -111,7 +134,6 @@
     id: Chocolatey.Chocolatey
     source: winget
     Ensure: Present
-### Azure Data Studio ###
 - resource: Microsoft.WinGet.DSC/WinGetPackage
   id: AzureDataStudio
   directives:
@@ -121,7 +143,6 @@
     id: Microsoft.AzureDataStudio
     source: winget
     Ensure: Present
-### Azure Storage Explorer ###
 - resource: Microsoft.WinGet.DSC/WinGetPackage
   id: AzureStorageExplorer
   directives:
@@ -131,7 +152,6 @@
     id: Microsoft.Azure.StorageExplorer
     source: winget
     Ensure: Present
-### Cloudflare WARP ###
 - resource: Microsoft.WinGet.DSC/WinGetPackage
   id: CloudflareWARP
   directives:
@@ -141,7 +161,6 @@
     id: Cloudflare.Warp
     source: winget
     Ensure: Present
-### Node.js ###
 - resource: Microsoft.WinGet.DSC/WinGetPackage
   id: Nodejs
   directives:
@@ -151,7 +170,6 @@
     id: OpenJS.Nodejs
     source: winget
     Ensure: Present
-### Obsidian ###
 - resource: Microsoft.WinGet.DSC/WinGetPackage
   id: Obsidian
   directives:
@@ -161,7 +179,6 @@
     id: Obsidian.Obsidian
     source: winget
     Ensure: Present
-### Terraform ###
 - resource: Microsoft.WinGet.DSC/WinGetPackage
   id: Terraform
   directives:
@@ -171,8 +188,6 @@
     id: HashiCorp.Terraform
     source: winget
     Ensure: Present
-###----------------IDEs----------------###
-### VS Code ###
 - resource: Microsoft.WinGet.DSC/WinGetPackage
   id: VisualStudioCode
   directives:
@@ -182,7 +197,6 @@
     id: Microsoft.VisualStudioCode
     source: winget
     Ensure: Present
-
 - resource: PSDscResources/Registry
   id: UpdateStartLayout
   directives:
