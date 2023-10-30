@@ -182,6 +182,7 @@
     id: Microsoft.VisualStudioCode
     source: winget
     Ensure: Present
+
 - resource: PSDscResources/Registry
   id: UpdateStartLayout
   directives:
@@ -192,5 +193,53 @@
     ValueName: Start_Layout
     ValueType: DWord
     ValueData: 1
+    Force: true
+    Ensure: Present
+- resource: PSDscResources/Registry
+  id: RemoveTaskBarTaskViewButton
+  directives:
+    description: Removes the task view button from the taskbar
+    allowPrerelease: true
+  settings:
+    Key: HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced
+    ValueName: ShowTaskViewButton
+    ValueType: DWord
+    ValueData: 0
+    Force: true
+    Ensure: Present
+- resource: PSDscResources/Registry
+  id: RemoveTaskBarWidgetsButton
+  directives:
+    description: Removes the widgets button from the taskbar
+    allowPrerelease: true
+  settings:
+    Key: HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced
+    ValueName: TaskbarDa
+    ValueType: DWord
+    ValueData: 0
+    Force: true
+    Ensure: Present
+- resource: PSDscResources/Registry
+  id: RemoveTaskBarChatButton
+  directives:
+    description: Removes the chat button from the taskbar
+    allowPrerelease: true
+  settings:
+    Key: HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced
+    ValueName: TaskbarMn
+    ValueType: DWord
+    ValueData: 0
+    Force: true
+    Ensure: Present
+- resource: PSDscResources/Registry
+  id: RemoveTaskBarSearchField
+  directives:
+    description: Removes the search field from the taskbar
+    allowPrerelease: true
+  settings:
+    Key: HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Search
+    ValueName: SearchboxTaskbarMode
+    ValueType: DWord
+    ValueData: 0
     Force: true
     Ensure: Present
