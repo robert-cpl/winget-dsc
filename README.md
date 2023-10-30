@@ -54,3 +54,19 @@ An assortment of examples for the resources that are available to execute in the
     source: winget
     Ensure: Present
 ```
+
+### Registry Key
+```yaml
+- resource: PSDscResources/Registry
+  id: UpdateStartLayout
+  directives:
+    description: Updates the start menu layout to less recommendations and more pins
+    allowPrerelease: false
+  settings:
+    Key: HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced
+    ValueName: Start_Layout
+    ValueType: DWord
+    ValueData: 1
+    Force: true
+    Ensure: Present
+```

@@ -132,10 +132,9 @@
     GetScript: |
       $appsList = @("Microsoft.MicrosoftSolitaireCollection", "Clipchamp.Clipchamp", "MicrosoftTeams", "Microsoft.BingNews", "Microsoft.People", "Microsoft.PowerAutomateDesktop")
 
-      Get-AppxPackage > packages.txt
       $foundApps = @()
       foreach ($app in $appsList) {
-          $foundApp = Get-AppxPackage -Name $app
+          $foundApp = Get-AppxPackage -AllUsers -Name $app
 
           if ($foundApp -ne $null) {
               $foundApps += $foundApp
@@ -166,7 +165,9 @@
       }
 
       function unpin_taskbar([string]$appname) {
-          ((New-Object -Com Shell.Application).NameSpace('shell:::{4234d49b-0245-4df3-b780-3893943456e1}').Items() | Where-Object{$_.Name -eq $appname}).Verbs() | Where-Object{$_.Name.replace('&','') -match 'Unpin from taskbar'} | ForEach-Object{$_.DoIt()}
+          ((New-Object -Com Shell.Application).NameSpace('shell:::{4234d49b-0245-4df3-b780-3893943456e1}').Items() `
+          | Where-Object{$_.Name -eq $appname}).Verbs() | Where-Object{$_.Name.replace('&','') -match 'Unpin from taskbar'} `
+          | ForEach-Object{$_.DoIt()}
       }
 
       unpin_taskbar('Microsoft Store')
