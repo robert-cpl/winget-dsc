@@ -66,22 +66,18 @@ function GetContent(){
         [string]$indentation = '',
         [bool]$runLocally = $true
     )
-    if ($runLocally) {
-        $fileName = Split-Path -Path $filePath -Leaf
-        $filePath = ".\configuration\modules\$fileName"
-    }
-    $content = Invoke-WebRequest -useb $filePath
+    $content = if ($runLocally) {Get-Content $filePath}else{(Invoke-WebRequest -useb $filePath).Content}
 
     # add indentation to each line
-    $contentContent = $content.Content -replace '(?m)^', $indentation
+    $formatedContent = $content -replace '(?m)^', $indentation
 
-    return $contentContent
+    return $formatedContent
 }
 
 $twoSpacesIndentation = '  '
 $fourSpacesIndentation = '    '
 
-$fileFolderPath = "https://raw.githubusercontent.com/robert-cpl/winget-dsc/main/configuration"
+$fileFolderPath = if($runsLocally){"https://raw.githubusercontent.com/robert-cpl/winget-dsc/main/configuration"}else{"./configuration"}
 $headerContent = GetContent -filePath "$fileFolderPath/modules/header.yaml" -runLocally $runLocally
 $footerContent = GetContent -filePath "$fileFolderPath/modules/footer.yaml" -indentation $twoSpacesIndentation -runLocally $runLocally
 
