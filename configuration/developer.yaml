@@ -35,6 +35,24 @@
     source: winget
     Ensure: Present
 - resource: Microsoft.WinGet.DSC/WinGetPackage
+  id: Minikube
+  directives:
+    description: Install minikube
+    allowPrerelease: true
+  settings:
+    id: Kubernetes.minikube
+    source: winget
+    Ensure: Present
+- resource: Microsoft.WinGet.DSC/WinGetPackage
+  id: Helm
+  directives:
+    description: Install Helm
+    allowPrerelease: true
+  settings:
+    id: Helm.Helm
+    source: winget
+    Ensure: Present
+- resource: Microsoft.WinGet.DSC/WinGetPackage
   id: SSMS
   directives:
     description: Install SQL Server Management Studio
@@ -101,7 +119,7 @@
     includeRecommended: true
     includeOptional: false
 - resource: PSDscResources/Script
-  id: installSqlServerScript
+  id: InstallSqlServerScript
   directives:
     description: Install Microsoft SQLServer 2022 Developer
   settings:

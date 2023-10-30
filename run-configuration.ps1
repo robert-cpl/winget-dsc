@@ -80,6 +80,7 @@ $fourSpacesIndentation = '    '
 $fileFolderPath = if($runsLocally){"https://raw.githubusercontent.com/robert-cpl/winget-dsc/main/configuration"}else{"./configuration"}
 $headerContent = GetContent -filePath "$fileFolderPath/modules/header.yaml" -runLocally $runLocally
 $footerContent = GetContent -filePath "$fileFolderPath/modules/footer.yaml" -indentation $twoSpacesIndentation -runLocally $runLocally
+$finishersContent = GetContent -filePath "$fileFolderPath/modules/finishers.yaml" -indentation $fourSpacesIndentation -runLocally $runLocally
 
 # DSC's
 $sharedConfigContent = GetContent -filePath "$fileFolderPath/shared.yaml" -indentation $fourSpacesIndentation -runLocally $runLocally
@@ -95,7 +96,7 @@ if ($dscProfile -eq $defaultDscProfile) {
 }
 
 # Build the DSC configuration file
-$headerContent, $sharedConfigContent, $configTypeContent, $footerContent | Set-Content -Path $configurationFilePath
+$headerContent, $sharedConfigContent, $configTypeContent, $finishersContent, $footerContent | Set-Content -Path $configurationFilePath
 
 # Run the configuration
 winget configuration --file $configurationFilePath 
