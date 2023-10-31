@@ -66,6 +66,7 @@ function GetContent(){
         [string]$indentation = '',
         [bool]$runLocally = $true
     )
+    Write-Host $filePath
     $content = if ($runLocally) {Get-Content $filePath}else{(Invoke-WebRequest -useb $filePath).Content}
 
     # add indentation to each line
