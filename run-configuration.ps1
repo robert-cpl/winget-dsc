@@ -8,7 +8,7 @@ if (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]:
 Write-Host "See full source code on GitHub @ https://github.com/robert-cpl/winget-dsc" -ForegroundColor Yellow
 
 # Check if running locally so we can use the local files
-$runLocally = if (Test-Path ".gitignore") { $true } else { $false }
+$runLocally = $false
 
 # Functions
 function GetUserInput {
