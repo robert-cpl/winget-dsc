@@ -78,7 +78,7 @@ function GetContent(){
 $twoSpacesIndentation = '  '
 $fourSpacesIndentation = '    '
 
-$fileFolderPath = if($runLocally){"https://raw.githubusercontent.com/robert-cpl/winget-dsc/main/configuration"}else{"./configuration"}
+$fileFolderPath = if($runLocally){"./configuration"}else{"https://raw.githubusercontent.com/robert-cpl/winget-dsc/main/configuration"}
 $headerContent = GetContent -filePath "$fileFolderPath/modules/header.yaml" -runLocally $runLocally
 $footerContent = GetContent -filePath "$fileFolderPath/modules/footer.yaml" -indentation $twoSpacesIndentation -runLocally $runLocally
 $finishersContent = GetContent -filePath "$fileFolderPath/modules/finishers.yaml" -indentation $fourSpacesIndentation -runLocally $runLocally
