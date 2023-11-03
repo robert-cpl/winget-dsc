@@ -127,5 +127,6 @@ $objForm.Height = $verticalResolution / 1.5
 
 $objForm.StartPosition = "CenterScreen"
 $objForm.Text = "Desired State Configuration" 
+$objForm.KeyPreview = $True
 
 [void] $objForm.ShowDialog() 
