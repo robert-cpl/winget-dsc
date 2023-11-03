@@ -2,6 +2,7 @@
 using assembly System.Windows.Forms
 using namespace System.Windows.Forms
 using namespace System.Drawing
+Add-Type -AssemblyName System.Windows.Forms
 
 ### Profile button names
 $buttonNames = @("Developer", "Personal", "Tricent", "Custom")
@@ -21,8 +22,11 @@ public static extern IntPtr CreateRoundRectRgn(int nLeftRect, int nTopRect,
 "@
 $Win32Helpers = Add-Type -MemberDefinition $code -Name "Win32Helpers" -PassThru
 
-$horizontalResolution = $(wmic PATH Win32_VideoController GET CurrentHorizontalResolution)[2].Trim()
-$verticalResolution = $(wmic PATH Win32_VideoController GET CurrentVerticalResolution)[2].Trim()
+# Get the resolution and scale of the primary screen
+$screen = [System.Windows.Forms.Screen]::PrimaryScreen
+$displayScaling = $screen.Bounds.Width / $screen.WorkingArea.Width
+$horizontalResolution = $(wmic PATH Win32_VideoController GET CurrentHorizontalResolution)[2].Trim() / $displayScaling
+$verticalResolution = $(wmic PATH Win32_VideoController GET CurrentVerticalResolution)[2].Trim() / $displayScaling
 $form = [Form] @{
     ClientSize      = [Point]::new($($horizontalResolution / 1.5), $($verticalResolution / 1.5));
     FormBorderStyle = [FormBorderStyle]::None;
