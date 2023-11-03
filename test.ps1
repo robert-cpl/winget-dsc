@@ -2,8 +2,8 @@
 using assembly System.Windows.Forms
 using namespace System.Windows.Forms
 using namespace System.Drawing
-Add-Type -AssemblyName System.Windows.Forms
 
+# Get the scale factor of the primary screen
 Add-Type -TypeDefinition @"
 using System;
 using System.Runtime.InteropServices;
@@ -13,25 +13,20 @@ public class PInvoke {
     public static extern int GetDeviceCaps(IntPtr hdc, int nIndex);
 }
 "@
-
 $g = [System.Drawing.Graphics]::FromHwnd([System.IntPtr]::Zero)
 $desktop = $g.GetHdc()
 $LogicalScreenHeight = [PInvoke]::GetDeviceCaps($desktop, 10)
 $PhysicalScreenHeight = [PInvoke]::GetDeviceCaps($desktop, 117)
-
 $g.ReleaseHdc($desktop)
 $g.Dispose()
-
 $scaleFactor = $PhysicalScreenHeight / $LogicalScreenHeight
 
-$scalePercentage = $scaleFactor * 100
-
-$scalePercentage
-
-echo $scalePercentage
+# Get the resolution and scale of the primary screen
+$horizontalResolution = $(wmic PATH Win32_VideoController GET CurrentHorizontalResolution)[2].Trim() / $scaleFactor
+$verticalResolution = $(wmic PATH Win32_VideoController GET CurrentVerticalResolution)[2].Trim() / $scaleFactor
 
 ### Profile button names
-$buttonNames = @("Developer", "Personal", "Tricent", "Custom")
+$buttonNames = @("Developer", "CPL", "Tricent", "Custom")
 
 ### Top bar button settings
 $topBarbuttonSize = [Size]::new(40, 42);
@@ -40,6 +35,7 @@ $topBarbuttonSize = [Size]::new(40, 42);
 $primaryColor = [Color]::FromArgb(255, 25, 25, 25)
 $secondaryColor = [Color]::FromArgb(255, 33, 33, 33)
 $accentColor = [Color]::FromArgb(255, 48, 48, 48)
+$buttonSelectedColor = [Color]::FromArgb(255, 165, 133, 3)
 
 $code = @"
 [System.Runtime.InteropServices.DllImport("gdi32.dll")]
@@ -48,12 +44,7 @@ public static extern IntPtr CreateRoundRectRgn(int nLeftRect, int nTopRect,
 "@
 $Win32Helpers = Add-Type -MemberDefinition $code -Name "Win32Helpers" -PassThru
 
-# Get the resolution and scale of the primary screen
-$screen = [System.Windows.Forms.Screen]::PrimaryScreen
-$displayScaling = $screen.Bounds.Width / $screen.WorkingArea.Width
-echo $displayScaling
-$horizontalResolution = $(wmic PATH Win32_VideoController GET CurrentHorizontalResolution)[2].Trim() / $scaleFactor
-$verticalResolution = $(wmic PATH Win32_VideoController GET CurrentVerticalResolution)[2].Trim() / $scaleFactor
+
 $form = [Form] @{
     ClientSize      = [Point]::new($($horizontalResolution / 1.5), $($verticalResolution / 1.5));
     FormBorderStyle = [FormBorderStyle]::None;
@@ -118,12 +109,13 @@ $topBar.Add_MouseMove( { if ($global:dragging) {
 $topBar.Add_MouseUp( { $global:dragging = $false })
 $form.Controls.Add($topBar)
 
-# Add a icon to the top bar
-$icon = [PictureBox] @{
-    Image    = [Image]::FromFile("H:\repos\winget-dsc\visual-studio-code.png");
-    SizeMode = [PictureBoxSizeMode]::StretchImage;
-    Size     = [Size]::new(20, 20);
-    Location = [Point]::new(10, 10);
+# Add a gear unicode to the top bar
+$icon = [Label] @{
+    Text      = [char]::ConvertFromUtf32(0x2699);
+    ForeColor = [Color]::White;
+    Font      = [Font]::new("Microsoft Sans Serif", 20, [FontStyle]::Bold);
+    Location  = [Point]::new(5, 5);
+    Size      = $topBarbuttonSize
 }
 $topBar.Controls.Add($icon)
 
@@ -181,6 +173,7 @@ $topBar.Controls.Add($minimizeFormButton)
 ## Settings
 $buttonRoundness = 3
 $buttonSize = [Size]::new(100, 30)
+$script:selectedButton = $null
 function CreateProfileButtons($buttonNames) {
     $location = [Point]::new(10, 10)
     $size = $buttonSize
@@ -200,25 +193,17 @@ function CreateProfileButtons($buttonNames) {
                     $this.Region = [Region]::FromHrgn($hrgn)
                 }).GetNewClosure())
         
-        # On click event that adds < symbol as a label to the right of the button and clears it from the other buttons
-        $button.add_Click(({
-                    $label = [Label] @{
-                        Text      = "<";
-                        ForeColor = [Color]::White;
-                        Font      = [Font]::new("Microsoft Sans Serif", 10, [FontStyle]::Bold);
-                        Location  = [Point]::new($($button.Location.X + $button.Width + 5), $($button.Location.Y + 5));
-                    }
-                    $buttons | ForEach-Object {
-                        # Remove any labels that contain < symbol
-                        if ($_.Controls.Text -eq "<") {
-                            echo "Removing label"
-                            $_.Controls.RemoveAt(0)
-                        }
-                    }
-                    $profileButtonArea.Controls.Add($label)
-                }).GetNewClosure())
+        # Change color to accent color on click and revert all other buttons to the primary color from profileButtonArea
+        $button.add_Click({
+                # If there's a previously selected button, revert its color
+                if ($null -ne $script:selectedButton) {
+                    $script:selectedButton.BackColor = $accentColor
+                }
 
-        
+                # Change the BackColor of the clicked button and update the selected button
+                $this.BackColor = $buttonSelectedColor
+                $script:selectedButton = $this
+            })
 
         $button.FlatAppearance.BorderSize = 0
         $button.FlatAppearance.BorderColor = $accentColor
@@ -234,7 +219,7 @@ $profileButtonArea = [Panel] @{
     BackColor = $primaryColor;
     Dock      = [DockStyle]::None;
     Location  = [Point]::new(0, 40);
-    Size      = [Size]::new(140, $($form.Height - 80));
+    Size      = [Size]::new(120, $($form.Height - 80));
 }
 $form.Controls.Add($profileButtonArea)
 
