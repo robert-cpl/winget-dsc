@@ -1,4 +1,13 @@
 - resource: Microsoft.WinGet.DSC/WinGetPackage
+  id: Slack
+  directives:
+    description: Install Slack
+    allowPrerelease: true
+  settings:
+    id: SlackTechnologies.Slack
+    source: winget
+    Ensure: Present
+- resource: Microsoft.WinGet.DSC/WinGetPackage
   id: AzureFunctionsCoreTools
   directives:
     description: Install Azure Functions Core Tools
@@ -81,15 +90,6 @@
     SetScript: |
       Enable-WindowsOptionalFeature -Online -FeatureName Microsoft-Windows-Subsystem-Linux -NoRestart
       wsl --install
-- resource: Microsoft.WinGet.DSC/WinGetPackage
-  id: Slack
-  directives:
-    description: Install Slack
-    allowPrerelease: true
-  settings:
-    id: SlackTechnologies.Slack
-    source: winget
-    Ensure: Present
 - resource: Microsoft.WinGet.DSC/WinGetPackage
   id: VisualStudio2022Professional
   directives:
