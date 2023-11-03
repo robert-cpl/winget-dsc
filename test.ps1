@@ -114,7 +114,7 @@ $icon = [Label] @{
     Text      = [char]::ConvertFromUtf32(0x2699);
     ForeColor = [Color]::White;
     Font      = [Font]::new("Microsoft Sans Serif", 20, [FontStyle]::Bold);
-    Location  = [Point]::new(5, 5);
+    Location  = [Point]::new(6, 5);
     Size      = $topBarbuttonSize
 }
 $topBar.Controls.Add($icon)
@@ -124,7 +124,7 @@ $title = [Label] @{
     Text      = "Winget DSC";
     ForeColor = [Color]::White;
     Font      = [Font]::new("Microsoft Sans Serif", 10, [FontStyle]::Bold);
-    Location  = [Point]::new(40, 12);
+    Location  = [Point]::new(45, 12);
 }
 $topBar.Controls.Add($title)
 
@@ -214,7 +214,7 @@ function CreateProfileButtons($buttonNames) {
     $profileButtonArea.Controls.AddRange($buttons)
 }
 
-# Area that hold the profile buttons and lives underneath the top bar
+# Area that holds the profile buttons and lives underneath the top bar
 $profileButtonArea = [Panel] @{
     BackColor = $primaryColor;
     Dock      = [DockStyle]::None;
@@ -235,6 +235,8 @@ $profileButtonArea.Controls.Add($profileButtonAreaBorder)
 
 # Create the buttons
 CreateProfileButtons($buttonNames)
+
+
 
 
 $form.ShowDialog()
