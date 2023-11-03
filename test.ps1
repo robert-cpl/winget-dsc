@@ -4,6 +4,32 @@ using namespace System.Windows.Forms
 using namespace System.Drawing
 Add-Type -AssemblyName System.Windows.Forms
 
+Add-Type -TypeDefinition @"
+using System;
+using System.Runtime.InteropServices;
+
+public class PInvoke {
+    [DllImport("gdi32.dll")]
+    public static extern int GetDeviceCaps(IntPtr hdc, int nIndex);
+}
+"@
+
+$g = [System.Drawing.Graphics]::FromHwnd([System.IntPtr]::Zero)
+$desktop = $g.GetHdc()
+$LogicalScreenHeight = [PInvoke]::GetDeviceCaps($desktop, 10)
+$PhysicalScreenHeight = [PInvoke]::GetDeviceCaps($desktop, 117)
+
+$g.ReleaseHdc($desktop)
+$g.Dispose()
+
+$scaleFactor = $PhysicalScreenHeight / $LogicalScreenHeight
+
+$scalePercentage = $scaleFactor * 100
+
+$scalePercentage
+
+echo $scalePercentage
+
 ### Profile button names
 $buttonNames = @("Developer", "Personal", "Tricent", "Custom")
 
@@ -25,8 +51,9 @@ $Win32Helpers = Add-Type -MemberDefinition $code -Name "Win32Helpers" -PassThru
 # Get the resolution and scale of the primary screen
 $screen = [System.Windows.Forms.Screen]::PrimaryScreen
 $displayScaling = $screen.Bounds.Width / $screen.WorkingArea.Width
-$horizontalResolution = $(wmic PATH Win32_VideoController GET CurrentHorizontalResolution)[2].Trim() / $displayScaling
-$verticalResolution = $(wmic PATH Win32_VideoController GET CurrentVerticalResolution)[2].Trim() / $displayScaling
+echo $displayScaling
+$horizontalResolution = $(wmic PATH Win32_VideoController GET CurrentHorizontalResolution)[2].Trim() / $scaleFactor
+$verticalResolution = $(wmic PATH Win32_VideoController GET CurrentVerticalResolution)[2].Trim() / $scaleFactor
 $form = [Form] @{
     ClientSize      = [Point]::new($($horizontalResolution / 1.5), $($verticalResolution / 1.5));
     FormBorderStyle = [FormBorderStyle]::None;
