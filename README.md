@@ -6,7 +6,7 @@ One line command:
 <br>`iwr -useb https://dsc.copilau.me | iex` 
 <br>or
 <br>
- `iwr -useb https://raw.githubusercontent.com/robert-cpl/winget-dsc/main/run-configuration.ps1 | iex`
+ `iwr -useb https://raw.githubusercontent.com/robert-cpl/winget-dsc/main/apply-configuration.ps1 | iex`
 
 # Resource examples
 An assortment of examples for the resources that are available to execute in the configuration.
