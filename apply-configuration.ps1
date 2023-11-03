@@ -8,7 +8,7 @@ if (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]:
 Write-Host "See full source code on GitHub @ https://github.com/robert-cpl/winget-dsc" -ForegroundColor Yellow
 
 # Check if running locally so we can use the local files
-$runLocally = $false
+$runLocally = if (Test-Path ".gitignore") { $true } else { $false }
 
 # Functions
 function GetUserInput {
@@ -43,7 +43,6 @@ $defaultDscProfile = "personal"
 $dscProfiles = @("personal", "developer")
 
 # User Input
-
 $dscProfile = GetUserInput -message "What DSC profile you want to install? ($($dscProfiles -join '/' ))." -choices $dscProfiles -defaultValue $defaultDscProfile
 
 # Configuration file path setup
@@ -59,15 +58,14 @@ if (!(Test-Path $configurationFolderPath)) {
 $configurationFileName = "configuration.dsc.yaml"
 $configurationFilePath = "$configurationFolderPath/$configurationFileName"
 
-# Modules
-function GetContent(){
+function GetContent() {
     param(
         [string]$filePath,
         [string]$indentation = '',
         [bool]$runLocally = $true
     )
     Write-Host $filePath
-    $content = if ($runLocally) {Get-Content $filePath}else{(Invoke-WebRequest -useb $filePath).Content}
+    $content = if ($runLocally) { Get-Content $filePath } else { (Invoke-WebRequest -useb $filePath).Content }
 
     # add indentation to each line
     $formatedContent = $content -replace '(?m)^', $indentation
@@ -75,10 +73,12 @@ function GetContent(){
     return $formatedContent
 }
 
+# Indentation
 $twoSpacesIndentation = '  '
 $fourSpacesIndentation = '    '
 
-$fileFolderPath = if($runLocally){"./configuration"}else{"https://raw.githubusercontent.com/robert-cpl/winget-dsc/main/configuration"}
+# Modules
+$fileFolderPath = if ($runLocally) { "./configuration" }else { "https://raw.githubusercontent.com/robert-cpl/winget-dsc/main/configuration" }
 $headerContent = GetContent -filePath "$fileFolderPath/modules/header.yaml" -runLocally $runLocally
 $footerContent = GetContent -filePath "$fileFolderPath/modules/footer.yaml" -indentation $twoSpacesIndentation -runLocally $runLocally
 $finishersContent = GetContent -filePath "$fileFolderPath/modules/finishers.yaml" -indentation $fourSpacesIndentation -runLocally $runLocally
@@ -87,11 +87,13 @@ $finishersContent = GetContent -filePath "$fileFolderPath/modules/finishers.yaml
 $sharedConfigContent = GetContent -filePath "$fileFolderPath/shared.yaml" -indentation $fourSpacesIndentation -runLocally $runLocally
 $personalConfigContent = GetContent -filePath "$fileFolderPath/personal.yaml" -indentation $fourSpacesIndentation -runLocally $runLocally
 $developerConfigContent = GetContent -filePath "$fileFolderPath/developer.yaml" -indentation $fourSpacesIndentation -runLocally $runLocally
+Write-Host $sharedConfigContent
 
 if ($dscProfile -eq $defaultDscProfile) {
     Write-Host "Using $dscProfile DSC configuration." -ForegroundColor Yellow
     $configTypeContent = $personalConfigContent
-} else{
+}
+else {
     Write-Host "Using $dscProfile DSC configuration." -ForegroundColor Yellow
     $configTypeContent = $developerConfigContent
 }
