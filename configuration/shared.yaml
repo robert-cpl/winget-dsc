@@ -285,3 +285,15 @@
     ValueData: 1
     Force: true
     Ensure: Present
+- resource: PSDscResources/Registry
+  id: UseItemCompactView
+  directives:
+    description: Use compact view for items in explorer
+    allowPrerelease: true
+  settings:
+    Key: HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced
+    ValueName: AutoCheckSelect
+    ValueType: DWord
+    ValueData: 0
+    Force: true
+    Ensure: Present
