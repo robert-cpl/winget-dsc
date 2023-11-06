@@ -286,9 +286,9 @@
     Force: true
     Ensure: Present
 - resource: PSDscResources/Registry
-  id: UseItemCompactView
+  id: DisableAutoCheckSelect
   directives:
-    description: Use compact view for items in explorer
+    description: Disable auto check select in explorer
     allowPrerelease: true
   settings:
     Key: HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced
