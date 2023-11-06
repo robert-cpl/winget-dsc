@@ -26,7 +26,7 @@ $horizontalResolution = $(wmic PATH Win32_VideoController GET CurrentHorizontalR
 $verticalResolution = $(wmic PATH Win32_VideoController GET CurrentVerticalResolution)[2].Trim() / $scaleFactor
 
 ### Profile button names
-$buttonNames = @("Developer", "CPL", "Tricent", "Custom")
+$buttonNames = @("cpl", "Developer", "Tricent", "Custom")
 
 ### Top bar button settings
 $topBarbuttonSize = [Size]::new(40, 42);
@@ -74,21 +74,6 @@ $topBarUnderline = [Label] @{
 }
 $topBar.Controls.Add($topBarUnderline);
 
-# Bottom bar
-$bottomBar = [Panel] @{
-    BackColor = $secondaryColor;
-    Dock      = [DockStyle]::Bottom;
-    Height    = 40;
-}
-# Underline
-$bottomBarUnderline = [Label] @{
-    BorderStyle = [BorderStyle]::None;
-    Height      = 1;
-    BackColor   = $accentColor;
-    Dock        = [DockStyle]::Top;
-}
-$bottomBar.Controls.Add($bottomBarUnderline);
-$form.Controls.Add($bottomBar)
 
 # Add drag functionality to the top bar
 $topBar.Add_MouseDown( { 
@@ -204,6 +189,12 @@ function CreateProfileButtons($buttonNames) {
                 $this.BackColor = $buttonSelectedColor
                 $script:selectedButton = $this
             })
+        
+        # First button is selected by default
+        if ($i -eq 0) {
+            $button.BackColor = $buttonSelectedColor
+            $script:selectedButton = $button
+        }
 
         $button.FlatAppearance.BorderSize = 0
         $button.FlatAppearance.BorderColor = $accentColor
@@ -216,10 +207,11 @@ function CreateProfileButtons($buttonNames) {
 
 # Area that holds the profile buttons and lives underneath the top bar
 $profileButtonArea = [Panel] @{
-    BackColor = $primaryColor;
-    Dock      = [DockStyle]::None;
-    Location  = [Point]::new(0, 40);
-    Size      = [Size]::new(120, $($form.Height - 80));
+    BackColor  = $primaryColor;
+    Dock       = [DockStyle]::None;
+    Location   = [Point]::new(0, 40);
+    Size       = [Size]::new(120, $($form.Height - 100));
+    AutoScroll = $true
 }
 $form.Controls.Add($profileButtonArea)
 
@@ -235,6 +227,126 @@ $profileButtonArea.Controls.Add($profileButtonAreaBorder)
 
 # Create the buttons
 CreateProfileButtons($buttonNames)
+
+# Create a panel that will hold the content of the selected button
+$buttonContentArea = [Panel] @{
+    BackColor = $secondaryColor;
+    Dock      = [DockStyle]::Fill;
+    Size      = [Size]::new($($form.Width - 120), $($form.Height - 160));
+}
+$form.Controls.Add($buttonContentArea)
+
+# Create a panel that will hold the content of the selected button
+$buttonContentSearchBarArea = [Panel] @{
+    BackColor = $primaryColor;
+    Dock      = [DockStyle]::Bottom;
+    Size      = [Size]::new($($form.Width), 60);
+}
+
+# Add top border to the buttonContentSearchBarArea
+$buttonContentSearchBarAreaBorder = [Label] @{
+    BorderStyle = [BorderStyle]::None;
+    Height      = 1;
+    BackColor   = $accentColor;
+    Dock        = [DockStyle]::Top;
+}
+$buttonContentSearchBarArea.Controls.Add($buttonContentSearchBarAreaBorder)
+$form.Controls.Add($buttonContentSearchBarArea)
+
+# Add centered search bar to the buttonContentSearchBarArea
+$searchBar = [TextBox] @{
+    Text      = "Search";
+    ForeColor = [Color]::White;
+    BackColor = $primaryColor;
+    Font      = [Font]::new("Microsoft Sans Serif", 20, [FontStyle]::Bold);
+    Location  = [Point]::new(($buttonContentSearchBarArea.Width / 2) - 100, 10);
+    Size      = [Size]::new(300, 60);
+}
+$searchBar.add_GotFocus({
+        if ($searchBar.Text -eq "Search") {
+            $searchBar.Text = ""
+        }
+    })
+$searchBar.add_LostFocus({
+        if ($searchBar.Text -eq "") {
+            $searchBar.Text = "Search"
+        }
+    })
+
+$searchBar.add_TextChanged({
+        $searchText = $searchBar.Text
+        foreach ($button in $buttonContentArea.Controls) {
+            if ($button -is [System.Windows.Forms.Button]) {
+                if ($searchText -eq "") {
+                    $button.FlatAppearance.BorderSize = 0
+                }
+                elseif ($button.Text -match $searchText) {
+                    $button.FlatAppearance.BorderSize = 2
+                    $button.FlatAppearance.BorderColor = [Color]::WhiteSmoke
+                }
+                else {
+                    $button.FlatAppearance.BorderSize = 0
+                }
+            }
+        }
+    })
+$buttonContentSearchBarArea.Controls.Add($searchBar)
+
+
+# Function that takes a list of  names and create toggle square buttons and puts them in the buttonContentArea
+function CreateToggleButtons($toggleButtonNames) {
+    $toggleAreaTopMargin = 50
+    $location = [Point]::new(130, $toggleAreaTopMargin)
+    $size = [Size]::new(120, 40) 
+    $columnWidth = $size.Width + 10
+
+    $toggleButtonNames | ForEach-Object -Begin { $i = 0 } -Process {
+        $button = [Button] @{
+            Text      = $toggleButtonNames[$i];
+            Font      = [Font]::new("Microsoft Sans Serif", 10, [FontStyle]::Bold);
+            ForeColor = [Color]::White;
+            BackColor = $accentColor;
+            FlatStyle = [FlatStyle]::Flat;
+            Size      = $size;
+            Location  = $location;
+        };
+        $button.add_Paint(({
+                    $hrgn = $Win32Helpers::CreateRoundRectRgn(0, 0, $this.Width, $this.Height, $buttonRoundness, $buttonRoundness)
+                    $this.Region = [Region]::FromHrgn($hrgn)
+                }).GetNewClosure())
+        
+        # Toggle color on click
+        $button.add_Click({
+                if ($this.BackColor -eq $accentColor) {
+                    $this.BackColor = $buttonSelectedColor
+                }
+                else {
+                    $this.BackColor = $accentColor
+                }
+            })
+
+        $button.FlatAppearance.BorderSize = 0
+        $button.FlatAppearance.BorderColor = $accentColor
+        $buttonContentArea.Controls.Add($button)
+
+        # Check if the next button's location would exceed the height of the buttonContentArea
+        if ($location.y + 2 * $size.Height -gt $buttonContentArea.Height) {
+            # Start a new column
+            $location.y = $toggleAreaTopMargin
+            $location.x += $columnWidth
+        }
+        else {
+            # Continue in the current column
+            $location.y += $size.Height + 10
+        }
+
+        $i++
+    }
+}
+
+
+CreateToggleButtons("ToggleButton1", "ToggleButton2", "ToggleButton3", "ToggleButton4", "ToggleButton4", "ToggleButton5", "ToggleButton6", "ToggleButton7", "ToggleButton8", "ToggleButton1", "ToggleButton2", "ToggleButton3", "ToggleButton4", "ToggleButton4", "ToggleButton5", "ToggleButton6", "ToggleButton7", "ToggleButton8" )
+
 
 
 
