@@ -230,10 +230,12 @@ CreateProfileButtons($buttonNames)
 
 # Create a panel that will hold the content of the selected button
 $buttonContentArea = [Panel] @{
-    BackColor = $secondaryColor;
-    Dock      = [DockStyle]::Fill;
-    Size      = [Size]::new($($form.Width - 120), $($form.Height - 160));
+    BackColor  = $secondaryColor;
+    Dock       = [DockStyle]::Fill;
+    Size       = [Size]::new($($form.Width - 120), $($form.Height - 160));
+    AutoScroll = $true
 }
+
 $form.Controls.Add($buttonContentArea)
 
 # Create a panel that will hold the content of the selected button
@@ -345,7 +347,7 @@ function CreateToggleButtons($toggleButtonNames) {
 }
 
 
-CreateToggleButtons("ToggleButton1", "ToggleButton2", "ToggleButton3", "ToggleButton4", "ToggleButton4", "ToggleButton5", "ToggleButton6", "ToggleButton7", "ToggleButton8", "ToggleButton1", "ToggleButton2", "ToggleButton3", "ToggleButton4", "ToggleButton4", "ToggleButton5", "ToggleButton6", "ToggleButton7", "ToggleButton8" )
+CreateToggleButtons("ToggleButton1", "ToggleButton2", "ToggleButton3", "ToggleButton4", "ToggleButton5", "ToggleButton6", "ToggleButton7", "ToggleButton8", "ToggleButton9", "ToggleButton10", "ToggleButton11", "ToggleButton12", "ToggleButton13", "ToggleButton14", "ToggleButton15", "ToggleButton16", "ToggleButton17", "ToggleButton18", "ToggleButton19", "ToggleButton20", "ToggleButton21", "ToggleButton22", "ToggleButton23", "ToggleButton24", "ToggleButton25", "ToggleButton26", "ToggleButton27", "ToggleButton28", "ToggleButton29", "ToggleButton30", "ToggleButton31", "ToggleButton32", "ToggleButton33", "ToggleButton34", "ToggleButton35", "ToggleButton36", "ToggleButton37", "ToggleButton38", "ToggleButton39", "ToggleButton40", "ToggleButton41", "ToggleButton42", "ToggleButton43", "ToggleButton44", "ToggleButton45", "ToggleButton46", "ToggleButton47", "ToggleButton48", "ToggleButton49", "ToggleButton50", "ToggleButton51", "ToggleButton52", "ToggleButton53", "ToggleButton54", "ToggleButton55", "ToggleButton56", "ToggleButton57", "ToggleButton58", "ToggleButton59", "ToggleButton60", "ToggleButton61", "ToggleButton62", "ToggleButton63", "ToggleButton64", "ToggleButton65", "ToggleButton66", "ToggleButton67", "ToggleButton68", "ToggleButton69", "ToggleButton70", "ToggleButton71", "ToggleButton72", "ToggleButton73", "ToggleButton74", "ToggleButton75", "ToggleButton76", "ToggleButton77", "ToggleButton78", "ToggleButton79", "ToggleButton80", "ToggleButton81", "ToggleButton82", "ToggleButton83", "ToggleButton84", "ToggleButton85", "ToggleButton86", "ToggleButton87", "ToggleButton88", "ToggleButton89", "ToggleButton90", "ToggleButton91", "ToggleButton92", "ToggleButton93", "ToggleButton94", "ToggleButton95", "ToggleButton96", "ToggleButton97", "ToggleButton98", "ToggleButton99", "ToggleButton100" )
 
 
 
