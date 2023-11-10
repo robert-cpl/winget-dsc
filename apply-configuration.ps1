@@ -87,7 +87,6 @@ $finishersContent = GetContent -filePath "$fileFolderPath/modules/finishers.yaml
 $sharedConfigContent = GetContent -filePath "$fileFolderPath/shared.yaml" -indentation $fourSpacesIndentation -runLocally $runLocally
 $personalConfigContent = GetContent -filePath "$fileFolderPath/personal.yaml" -indentation $fourSpacesIndentation -runLocally $runLocally
 $developerConfigContent = GetContent -filePath "$fileFolderPath/developer.yaml" -indentation $fourSpacesIndentation -runLocally $runLocally
-Write-Host $sharedConfigContent
 
 if ($dscProfile -eq $defaultDscProfile) {
     Write-Host "Using $dscProfile DSC configuration." -ForegroundColor Yellow

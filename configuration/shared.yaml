@@ -45,7 +45,7 @@
       }
 
       unpin_taskbar('Microsoft Store')
-      unpin_taskbar('Edge')
+      unpin_taskbar('Microsoft Edge')
 
 - resource: Microsoft.Windows.Developer/DeveloperMode
   id: DeveloperMode
