@@ -151,6 +151,16 @@
     id: OpenJS.Nodejs
     source: winget
     Ensure: Present
+### Python ###
+- resource: Microsoft.WinGet.DSC/WinGetPackage
+  id: Python
+  directives:
+    description: Install Python
+    allowPrerelease: true
+  settings:
+    id: Python.Python.3.8
+    source: winget
+    Ensure: Present
 ### Obsidian ###
 - resource: Microsoft.WinGet.DSC/WinGetPackage
   id: Obsidian
