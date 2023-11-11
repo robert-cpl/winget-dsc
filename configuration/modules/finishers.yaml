@@ -1,0 +1,15 @@
+- resource: PSDscResources/Script
+  id: RestartExplorer
+  directives:
+    description: Restart explorer.exe
+  settings:
+    GetScript: |
+      return @{
+          Result = $true
+      }
+    TestScript: |
+      $true
+    SetScript: |
+      Stop-Process -Name explorer -Force
+      Start-Sleep -Seconds 1
+      Start-Process -FilePath explorer.exe

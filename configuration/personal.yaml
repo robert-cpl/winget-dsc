@@ -1,5 +1,3 @@
-###----------------Gaming----------------###
-### Steam ###
 - resource: Microsoft.WinGet.DSC/WinGetPackage
   id: Steam
   directives:
@@ -9,7 +7,6 @@
     id: Valve.Steam
     source: winget
     Ensure: Present
-### Epic Games Launcher ###
 - resource: Microsoft.WinGet.DSC/WinGetPackage
   id: EpicGamesLauncher
   directives:
@@ -19,8 +16,6 @@
     id: EpicGames.EpicGamesLauncher
     source: winget
     Ensure: Present
-###----------------Communication----------------###
-### Teams ###
 - resource: Microsoft.WinGet.DSC/WinGetPackage
   id: Teams
   directives:
@@ -30,8 +25,6 @@
     id: Microsoft.Teams
     source: winget
     Ensure: Present
-###----------------IDEs----------------###
-### Visual Studio Community 2022 ###
 - resource: Microsoft.WinGet.DSC/WinGetPackage
   id: VisualStudio2022Community
   directives:
