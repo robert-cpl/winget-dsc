@@ -162,8 +162,6 @@
     id: OpenJS.Nodejs
     source: winget
     Ensure: Present
-<<<<<<< HEAD
-### Python ###
 - resource: Microsoft.WinGet.DSC/WinGetPackage
   id: Python
   directives:
@@ -173,9 +171,6 @@
     id: Python.Python.3.8
     source: winget
     Ensure: Present
-### Obsidian ###
-=======
->>>>>>> 95e2f03690cfeed28138c6f72f7ca414e56b082b
 - resource: Microsoft.WinGet.DSC/WinGetPackage
   id: Obsidian
   directives:
