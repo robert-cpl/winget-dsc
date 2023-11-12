@@ -1,7 +1,7 @@
 # Check for admin rights
 if (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
     Write-Output "WinGet needs Administrator rights to run. Restarting in Admin mode..."
-    Start-Process -Verb runas -FilePath powershell.exe -ArgumentList "iwr -useb https://raw.githubusercontent.com/robert-cpl/winget-dsc/main/run-configuration.ps1 | iex"
+    Start-Process -Verb runas -FilePath powershell.exe -ArgumentList "iwr -useb https://raw.githubusercontent.com/robert-cpl/winget-dsc/main/apply-configuration.ps1 | iex"
     break
 }
 
@@ -43,7 +43,6 @@ $defaultDscProfile = "personal"
 $dscProfiles = @("personal", "developer")
 
 # User Input
-
 $dscProfile = GetUserInput -message "What DSC profile you want to install? ($($dscProfiles -join '/' ))." -choices $dscProfiles -defaultValue $defaultDscProfile
 
 # Configuration file path setup
@@ -59,31 +58,30 @@ if (!(Test-Path $configurationFolderPath)) {
 $configurationFileName = "configuration.dsc.yaml"
 $configurationFilePath = "$configurationFolderPath/$configurationFileName"
 
-# Modules
-function GetContent(){
+function GetContent() {
     param(
         [string]$filePath,
         [string]$indentation = '',
         [bool]$runLocally = $true
     )
-    if ($runLocally) {
-        $fileName = Split-Path -Path $filePath -Leaf
-        $filePath = ".\configuration\modules\$fileName"
-    }
-    $content = Invoke-WebRequest -useb $filePath
+    Write-Host $filePath
+    $content = if ($runLocally) { Get-Content $filePath } else { (Invoke-WebRequest -useb $filePath).Content }
 
     # add indentation to each line
-    $contentContent = $content.Content -replace '(?m)^', $indentation
+    $formatedContent = $content -replace '(?m)^', $indentation
 
-    return $contentContent
+    return $formatedContent
 }
 
+# Indentation
 $twoSpacesIndentation = '  '
 $fourSpacesIndentation = '    '
 
-$fileFolderPath = "https://raw.githubusercontent.com/robert-cpl/winget-dsc/main/configuration"
+# Modules
+$fileFolderPath = if ($runLocally) { "./configuration" }else { "https://raw.githubusercontent.com/robert-cpl/winget-dsc/main/configuration" }
 $headerContent = GetContent -filePath "$fileFolderPath/modules/header.yaml" -runLocally $runLocally
 $footerContent = GetContent -filePath "$fileFolderPath/modules/footer.yaml" -indentation $twoSpacesIndentation -runLocally $runLocally
+$finishersContent = GetContent -filePath "$fileFolderPath/modules/finishers.yaml" -indentation $fourSpacesIndentation -runLocally $runLocally
 
 # DSC's
 $sharedConfigContent = GetContent -filePath "$fileFolderPath/shared.yaml" -indentation $fourSpacesIndentation -runLocally $runLocally
@@ -93,13 +91,14 @@ $developerConfigContent = GetContent -filePath "$fileFolderPath/developer.yaml" 
 if ($dscProfile -eq $defaultDscProfile) {
     Write-Host "Using $dscProfile DSC configuration." -ForegroundColor Yellow
     $configTypeContent = $personalConfigContent
-} else{
+}
+else {
     Write-Host "Using $dscProfile DSC configuration." -ForegroundColor Yellow
     $configTypeContent = $developerConfigContent
 }
 
 # Build the DSC configuration file
-$headerContent, $sharedConfigContent, $configTypeContent, $footerContent | Set-Content -Path $configurationFilePath
+$headerContent, $sharedConfigContent, $configTypeContent, $finishersContent, $footerContent | Set-Content -Path $configurationFilePath
 
 # Run the configuration
 winget configuration --file $configurationFilePath 
@@ -112,21 +111,3 @@ if ($LASTEXITCODE -ne 0) {
 }
 
 Read-Host "Configuration completed. Press ENTER to exit."
-
-
-[void] [System.Reflection.Assembly]::LoadWithPartialName("System.Windows.Forms")
-[void] [System.Reflection.Assembly]::LoadWithPartialName("System.Drawing") 
-
-$objForm = New-Object Windows.Forms.Form 
-
-$horizontalResolution = $(wmic PATH Win32_VideoController GET CurrentHorizontalResolution)[2].Trim()
-$verticalResolution = $(wmic PATH Win32_VideoController GET CurrentVerticalResolution)[2].Trim()
-
-$objForm.Width = $horizontalResolution / 1.5
-$objForm.Height = $verticalResolution / 1.5
-
-$objForm.StartPosition = "CenterScreen"
-$objForm.Text = "Desired State Configuration" 
-$objForm.KeyPreview = $True
-
-[void] $objForm.ShowDialog() 

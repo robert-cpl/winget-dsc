@@ -1,5 +1,21 @@
-###----------------Tools----------------###
-### k9s ###
+- resource: Microsoft.WinGet.DSC/WinGetPackage
+  id: Slack
+  directives:
+    description: Install Slack
+    allowPrerelease: true
+  settings:
+    id: SlackTechnologies.Slack
+    source: winget
+    Ensure: Present
+- resource: Microsoft.WinGet.DSC/WinGetPackage
+  id: AzureFunctionsCoreTools
+  directives:
+    description: Install Azure Functions Core Tools
+    allowPrerelease: true
+  settings:
+    id: Microsoft.Azure.FunctionsCoreTools
+    source: winget
+    Ensure: Present
 - resource: Microsoft.WinGet.DSC/WinGetPackage
   id: k9s
   directives:
@@ -9,7 +25,6 @@
     id: Derailed.k9s
     source: winget
     Ensure: Present
-### Docker ###
 - resource: Microsoft.WinGet.DSC/WinGetPackage
   id: DockerDesktop
   directives:
@@ -19,7 +34,6 @@
     id: Docker.DockerDesktop
     source: winget
     Ensure: Present
-### Kubernetes CLI ###
 - resource: Microsoft.WinGet.DSC/WinGetPackage
   id: KubeCtl
   directives:
@@ -29,7 +43,24 @@
     id: Kubernetes.kubectl
     source: winget
     Ensure: Present
-### SQL Server Management Studio ###
+- resource: Microsoft.WinGet.DSC/WinGetPackage
+  id: Minikube
+  directives:
+    description: Install minikube
+    allowPrerelease: true
+  settings:
+    id: Kubernetes.minikube
+    source: winget
+    Ensure: Present
+- resource: Microsoft.WinGet.DSC/WinGetPackage
+  id: Helm
+  directives:
+    description: Install Helm
+    allowPrerelease: true
+  settings:
+    id: Helm.Helm
+    source: winget
+    Ensure: Present
 - resource: Microsoft.WinGet.DSC/WinGetPackage
   id: SSMS
   directives:
@@ -39,17 +70,6 @@
     id: Microsoft.SQLServerManagementStudio
     source: winget
     Ensure: Present
-### SQL Server 2022 Developer ###
-- resource: Microsoft.WinGet.DSC/WinGetPackage
-  id: SqlServer2022Developer
-  directives:
-    description: Install SQL Server 2022 Developer
-    allowPrerelease: true
-  settings:
-    id: Microsoft.SQLServer.2022.Developer
-    source: winget
-    Ensure: Present
-### WSL ###
 - resource: PSDscResources/Script
   id: WSLInstall
   directives:
@@ -70,19 +90,6 @@
     SetScript: |
       Enable-WindowsOptionalFeature -Online -FeatureName Microsoft-Windows-Subsystem-Linux -NoRestart
       wsl --install
-###----------------Communication----------------###
-### Slack ###
-- resource: Microsoft.WinGet.DSC/WinGetPackage
-  id: Slack
-  directives:
-    description: Install Slack
-    allowPrerelease: true
-  settings:
-    id: SlackTechnologies.Slack
-    source: winget
-    Ensure: Present
-###----------------IDEs----------------###
-### Visual Studio Professional 2022 ###
 - resource: Microsoft.WinGet.DSC/WinGetPackage
   id: VisualStudio2022Professional
   directives:
@@ -111,45 +118,18 @@
       ]
     includeRecommended: true
     includeOptional: false
-
-###----------------Debloat----------------###
-### Remove pre-installed Windows apps ###
 - resource: PSDscResources/Script
-  id: WindowsDebloatScript
+  id: InstallSqlServerScript
   directives:
-    description: Remove pre-installed apps
+    description: Install Microsoft SQLServer 2022 Developer
   settings:
     GetScript: |
-      $appsList = @("Microsoft.MicrosoftSolitaireCollection", "Clipchamp.Clipchamp")
-
-      $foundApps = @()
-      foreach ($app in $appsList) {
-          $foundApp = Get-AppxPackage -Name $app
-
-          if ($foundApp -ne $null) {
-              $foundApps += $foundApp
-          }
-      }
-
+      $instance = (Get-ItemProperty 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server')
       return @{
-          Result = $foundApps
+          Result = $instance
       }
     TestScript: |
-      $appsList = @("Microsoft.MicrosoftSolitaireCollection", "Clipchamp.Clipchamp")
-
-      foreach ($app in $appsList) {
-          $foundApp = Get-AppxPackage -Name $app
-
-          if ($foundApp -ne $null) {
-              return $false
-          }
-      }
-
-      return $true
+      $instance = (Get-ItemProperty 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server')
+      if ($instance -ne $null) { return $true } else { return $false }
     SetScript: |
-      $appsList = @("Microsoft.MicrosoftSolitaireCollection", "Clipchamp.Clipchamp")
-
-      foreach ($app in $appsList) {
-          # Remove installed app for all existing users
-          Get-AppxPackage -Name $app -AllUsers | Remove-AppxPackage
-      }
+      winget install Microsoft.SQLServer.2022.Developer

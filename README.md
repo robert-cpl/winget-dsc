@@ -3,7 +3,10 @@ This is a PowerShell script that leverages the `winget configuration`  command t
 <br>The script will stitch together a winget configuration file based on the profile you chose.
 # Usage
 One line command: 
-<br>`iwr -useb https://dsc.copilau.me | iex`
+<br>`iwr -useb https://dsc.copilau.me | iex` 
+<br>or
+<br>
+ `iwr -useb https://raw.githubusercontent.com/robert-cpl/winget-dsc/main/apply-configuration.ps1 | iex`
 
 # Resource examples
 An assortment of examples for the resources that are available to execute in the configuration.
@@ -52,5 +55,21 @@ An assortment of examples for the resources that are available to execute in the
   settings:
     id: Microsoft.VisualStudioCode
     source: winget
+    Ensure: Present
+```
+
+### Registry Key
+```yaml
+- resource: PSDscResources/Registry
+  id: UpdateStartLayout
+  directives:
+    description: Updates the start menu layout to less recommendations and more pins
+    allowPrerelease: false
+  settings:
+    Key: HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced
+    ValueName: Start_Layout
+    ValueType: DWord
+    ValueData: 1
+    Force: true
     Ensure: Present
 ```
