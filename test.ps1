@@ -59,7 +59,7 @@ $form.add_Load({
         $form.Region = [Region]::FromHrgn($hrgn)
     })
 
-# Top bar 
+### TOP BAR ###
 $topBar = [Panel] @{
     BackColor = $secondaryColor;
     Dock      = [DockStyle]::Top;
@@ -154,15 +154,27 @@ $minimizeFormButton.FlatAppearance.BorderSize = 0
 $minimizeFormButton.FlatAppearance.BorderColor = $secondaryColor
 $topBar.Controls.Add($minimizeFormButton)
 
+### PROFILE BUTTONS ###
 # Function that takes a list of button names and creates a buttons
 ## Settings
-$buttonRoundness = 3
+$buttonRoundness = 5
 $buttonSize = [Size]::new(100, 30)
 $script:selectedButton = $null
 function CreateProfileButtons($buttonNames) {
     $location = [Point]::new(10, 10)
     $size = $buttonSize
     $buttons = @()
+    $profileLabel = [Label] @{
+        Text      = "--- Profiles ---";
+        ForeColor = $buttonSelectedColor;
+        Font      = [Font]::new("Microsoft Sans Serif", 10, [FontStyle]::Bold);
+        Size      = $size;
+        TextAlign = [ContentAlignment]::MiddleCenter;
+        Location  = $location;
+    }
+    $buttons += $profileLabel
+    $location.y += ($size.Height + 10 )
+
     $buttonNames | ForEach-Object -Begin { $i = 0 } -Process {
         $button = [Button] @{
             Text      = $buttonNames[$i];
@@ -228,12 +240,14 @@ $profileButtonArea.Controls.Add($profileButtonAreaBorder)
 # Create the buttons
 CreateProfileButtons($buttonNames)
 
+### PACKAGES AREA ###
 # Create a panel that will hold the content of the selected button
 $buttonContentArea = [Panel] @{
-    BackColor  = $secondaryColor;
-    Dock       = [DockStyle]::Fill;
-    Size       = [Size]::new($($form.Width - 120), $($form.Height - 160));
-    AutoScroll = $true
+    BackColor    = $secondaryColor;
+    Dock         = [DockStyle]::Fill;
+    Size         = [Size]::new($($form.Width - 120), $($form.Height - 160));
+    AutoScroll   = $true
+    AutoSizeMode = [AutoSizeMode]::GrowAndShrink
 }
 
 $form.Controls.Add($buttonContentArea)
@@ -255,101 +269,61 @@ $buttonContentSearchBarAreaBorder = [Label] @{
 $buttonContentSearchBarArea.Controls.Add($buttonContentSearchBarAreaBorder)
 $form.Controls.Add($buttonContentSearchBarArea)
 
-# Add centered search bar to the buttonContentSearchBarArea
-$searchBarPanel = [Panel] @{
-    BackColor = $secondaryColor;
-    Location  = [Point]::new(($buttonContentSearchBarArea.Width / 2) - 100, 10);
-    Size      = [Size]::new(300, 40);
-}
-# Round corners
-$searchBarPanel.add_Paint(({
-            $hrgn = $Win32Helpers::CreateRoundRectRgn(0, 0, $this.Width, $this.Height, $buttonRoundness, $buttonRoundness)
-            $this.Region = [Region]::FromHrgn($hrgn)
-        }).GetNewClosure())
 
-$searchBar = [TextBox] @{
-    Text        = "Search";
-    ForeColor   = [Color]::White;
-    BackColor   = $secondaryColor;
-    Font        = [Font]::new("Microsoft Sans Serif", 24, [FontStyle]::Bold);
-    Size        = [Size]::new(300, 40);
-    BorderStyle = [BorderStyle]::None;
-}
-$searchBar.add_GotFocus({
-        if ($searchBar.Text -eq "Search") {
-            $searchBar.Text = ""
-        }
-    })
-$searchBar.add_LostFocus({
-        if ($searchBar.Text -eq "") {
-            $searchBar.Text = "Search"
-        }
-    })
-
-$searchBar.add_TextChanged({
-        $searchText = $searchBar.Text
-        foreach ($button in $buttonContentArea.Controls) {
-            if ($button -is [System.Windows.Forms.Button]) {
-                if ($searchText -eq "") {
-                    $button.FlatAppearance.BorderSize = 0
-                }
-                elseif ($button.Text -match $searchText) {
-                    $button.FlatAppearance.BorderSize = 2
-                    $button.FlatAppearance.BorderColor = [Color]::WhiteSmoke
-                }
-                else {
-                    $button.FlatAppearance.BorderSize = 0
-                }
-            }
-        }
-    })
-
-# add select all text in the search bar with ctrl+a
-$searchBar.add_KeyDown({
-        if ($_.KeyCode -eq "A" -and $_.Control) {
-            $searchBar.SelectAll()
-            $_.SuppressKeyPress = $true
-        }
-    })
-$searchBarPanel.Controls.Add($searchBar)
-$buttonContentSearchBarArea.Controls.Add($searchBarPanel)
 
 
 # Function that takes a list of  names and create toggle square buttons and puts them in the buttonContentArea
-function CreateToggleButtons($toggleButtonNames) {
+function CreateToggleButtons($packages) {
     $toggleAreaTopMargin = 50
     $location = [Point]::new(130, $toggleAreaTopMargin)
     $size = [Size]::new(120, 40) 
     $columnWidth = $size.Width + 10
 
-    $toggleButtonNames | ForEach-Object -Begin { $i = 0 } -Process {
-        $button = [Button] @{
-            Text      = $toggleButtonNames[$i];
-            Font      = [Font]::new("Microsoft Sans Serif", 10, [FontStyle]::Bold);
-            ForeColor = [Color]::White;
-            BackColor = $accentColor;
-            FlatStyle = [FlatStyle]::Flat;
-            Size      = $size;
-            Location  = $location;
-        };
-        $button.add_Paint(({
-                    $hrgn = $Win32Helpers::CreateRoundRectRgn(0, 0, $this.Width, $this.Height, $buttonRoundness, $buttonRoundness)
-                    $this.Region = [Region]::FromHrgn($hrgn)
-                }).GetNewClosure())
-        
-        # Toggle color on click
-        $button.add_Click({
-                if ($this.BackColor -eq $accentColor) {
-                    $this.BackColor = $buttonSelectedColor
-                }
-                else {
-                    $this.BackColor = $accentColor
-                }
-            })
+    # 
 
-        $button.FlatAppearance.BorderSize = 0
-        $button.FlatAppearance.BorderColor = $accentColor
-        $buttonContentArea.Controls.Add($button)
+    $packages | ForEach-Object -Begin { $i = 0 } -Process {
+        # If button name starts with ---, create a label instead
+        if ($packages[$i].displayName -match "---") {
+            $label = [Label] @{
+                Text      = $packages[$i].displayName;
+                ForeColor = $buttonSelectedColor;
+                Font      = [Font]::new("Microsoft Sans Serif", 10, [FontStyle]::Bold);
+                Size      = $size;
+                TextAlign = [ContentAlignment]::MiddleCenter;
+                Location  = $location;
+            }
+            $buttonContentArea.Controls.Add($label)
+        }
+        else {
+            $button = [Button] @{
+                Text      = $packages[$i].displayName;
+                Font      = [Font]::new("Microsoft Sans Serif", 10, [FontStyle]::Bold);
+                ForeColor = [Color]::White;
+                BackColor = $accentColor;
+                FlatStyle = [FlatStyle]::Flat;
+                Size      = $size;
+                Location  = $location;
+            };
+            $button.add_Paint(({
+                        $hrgn = $Win32Helpers::CreateRoundRectRgn(0, 0, $this.Width, $this.Height, $buttonRoundness, $buttonRoundness)
+                        $this.Region = [Region]::FromHrgn($hrgn)
+                    }).GetNewClosure())
+            
+            # Toggle color on click
+            $button.add_Click({
+                    if ($this.BackColor -eq $accentColor) {
+                        $this.BackColor = $buttonSelectedColor
+                    }
+                    else {
+                        $this.BackColor = $accentColor
+                    }
+                })
+    
+            $button.FlatAppearance.BorderSize = 0
+            $button.FlatAppearance.BorderColor = $accentColor
+            $buttonContentArea.Controls.Add($button)
+        }
+
 
         # Check if the next button's location would exceed the height of the buttonContentArea
         if ($location.y + 2 * $size.Height -gt $buttonContentArea.Height) {
@@ -366,6 +340,98 @@ function CreateToggleButtons($toggleButtonNames) {
     }
 }
 
-CreateToggleButtons("ToggleButton1", "ToggleButton2", "ToggleButton3", "ToggleButton4", "ToggleButton5", "ToggleButton6", "ToggleButton7", "ToggleButton8", "ToggleButton9", "ToggleButton10", "ToggleButton11", "ToggleButton12", "ToggleButton13", "ToggleButton14", "ToggleButton15", "ToggleButton16", "ToggleButton17", "ToggleButton18", "ToggleButton19", "ToggleButton20", "ToggleButton21", "ToggleButton22", "ToggleButton23", "ToggleButton24", "ToggleButton25", "ToggleButton26", "ToggleButton27", "ToggleButton28", "ToggleButton29", "ToggleButton30", "ToggleButton31", "ToggleButton32", "ToggleButton33", "ToggleButton34", "ToggleButton35", "ToggleButton36", "ToggleButton37", "ToggleButton38", "ToggleButton39", "ToggleButton40", "ToggleButton41", "ToggleButton42", "ToggleButton43", "ToggleButton44", "ToggleButton45", "ToggleButton46", "ToggleButton47", "ToggleButton48", "ToggleButton49", "ToggleButton50", "ToggleButton51", "ToggleButton52", "ToggleButton53", "ToggleButton54", "ToggleButton55", "ToggleButton56", "ToggleButton57", "ToggleButton58", "ToggleButton59", "ToggleButton60", "ToggleButton61", "ToggleButton62", "ToggleButton63", "ToggleButton64", "ToggleButton65", "ToggleButton66", "ToggleButton67", "ToggleButton68", "ToggleButton69", "ToggleButton70", "ToggleButton71", "ToggleButton72", "ToggleButton73", "ToggleButton74", "ToggleButton75", "ToggleButton76", "ToggleButton77", "ToggleButton78", "ToggleButton79", "ToggleButton80", "ToggleButton81", "ToggleButton82", "ToggleButton83", "ToggleButton84", "ToggleButton85", "ToggleButton86", "ToggleButton87", "ToggleButton88", "ToggleButton89", "ToggleButton90", "ToggleButton91", "ToggleButton92", "ToggleButton93", "ToggleButton94", "ToggleButton95", "ToggleButton96", "ToggleButton97", "ToggleButton98", "ToggleButton99", "ToggleButton100" )
+# Load packages.json file
+$packages = Get-Content -Raw -Path "packages.json" | ConvertFrom-Json
+CreateToggleButtons($packages)
+
+#### SEARCH BAR ####
+$highlightBorderColor = $buttonSelectedColor
+$highlightBorderSize = 4
+# Add centered search bar to the buttonContentSearchBarArea
+$searchBarPanel = [Panel] @{
+    BackColor = $secondaryColor;
+    Location  = [Point]::new(($buttonContentSearchBarArea.Width / 2) - 100, 10);
+    Size      = [Size]::new(300, 40);
+}
+# Round corners
+$searchBarPanel.add_Paint(({
+            $hrgn = $Win32Helpers::CreateRoundRectRgn(0, 0, $this.Width, $this.Height, $buttonRoundness, $buttonRoundness)
+            $this.Region = [Region]::FromHrgn($hrgn)
+        }).GetNewClosure())
+
+$searchBar = [TextBox] @{
+    Text        = "Search";
+    ForeColor   = [Color]::Gray;
+    BackColor   = $secondaryColor;
+    Font        = [Font]::new("Microsoft Sans Serif", 24, [FontStyle]::Bold);
+    Size        = [Size]::new(300, 40);
+    BorderStyle = [BorderStyle]::None;
+    TextAlign   = [HorizontalAlignment]::Center;
+}
+$searchBar.add_GotFocus({
+        if ($searchBar.Text -eq "Search") {
+            $searchBar.Text = ""
+        }
+    })
+$searchBar.add_LostFocus({
+        if ($searchBar.Text -eq "") {
+            $searchBar.Text = "Search"
+        }
+    })
+
+# add select all text in the search bar with ctrl+a
+$searchBar.add_KeyDown({
+        if ($_.KeyCode -eq "A" -and $_.Control) {
+            $searchBar.SelectAll()
+            $_.SuppressKeyPress = $true
+        }
+    })
+
+# On Enter perform click on all visible buttons
+$searchBar.add_KeyDown({
+        if ($_.KeyCode -eq "Enter") {
+            $allButtons = $buttonContentArea.Controls | Where-Object { $_ -is [System.Windows.Forms.Button] }
+            $visibleButtons = $allButtons | Where-Object { $_.Visible -eq $true }
+            foreach ($button in $visibleButtons) {
+                $button.PerformClick()
+            }
+            # Remove Windows ding sound
+            $_.SuppressKeyPress = $true
+        }
+    })
+
+$searchBarPanel.Controls.Add($searchBar)
+$buttonContentSearchBarArea.Controls.Add($searchBarPanel)
+
+# Store the original locations of the buttons
+$originalLocations = @{}
+$buttonContentArea.Controls | Where-Object { $_ -is [System.Windows.Forms.Button] } | ForEach-Object { $originalLocations[$_.Text] = $_.Location }
+
+$searchBar.add_TextChanged({
+        $searchText = $searchBar.Text
+        $buttonlocation = [Point]::new(130, $toggleAreaTopMargin)
+        $allButtons = $buttonContentArea.Controls | Where-Object { $_ -is [System.Windows.Forms.Button] }
+        if ($searchText -eq "" -or $searchText -eq "Search") {
+            # Reset all buttons to their original locations and make them visible
+            foreach ($button in $allButtons) {
+                $button.Location = $originalLocations[$button.Text]
+                $button.Visible = $true
+            }
+        }
+        else {
+            # Update the location of matching buttons and hide non-matching buttons
+            $matchingButtons = $allButtons | Where-Object { $_.Text -like "*$searchText*" }
+            $nonMatchingButtons = $allButtons | Where-Object { $_.Text -notlike "*$searchText*" }
+            foreach ($button in $matchingButtons) {
+                $buttonlocation.y += $button.Height + 10
+                $button.Location = $buttonlocation
+                $button.Visible = $true
+                $toggleAreaTopMargin += $button.Height + 50
+            }
+            foreach ($button in $nonMatchingButtons) {
+                $button.Visible = $false
+            }
+        }
+    })
 
 $form.ShowDialog()
