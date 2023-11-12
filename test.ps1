@@ -357,7 +357,7 @@ $searchBarPanel = [Panel] @{
 }
 # Add Reset all selections button right next to the search bar
 $resetSelectionsButton = [Button] @{
-    Text      = [char]::ConvertFromUtf32(0x00002611);
+    Text      = [char]::ConvertFromUtf32(0x000021BA);
     Font      = [Font]::new("Microsoft Sans Serif", 20, [FontStyle]::Bold);
     ForeColor = $buttonSelectedColor;
     BackColor = $secondaryColor;
