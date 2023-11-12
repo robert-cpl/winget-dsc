@@ -1,0 +1,82 @@
+[
+  {
+    "displayName": "VS Code",
+    "description": "Install VS Code",
+    "cathegory": "Dev Tools",
+    "source": "winget",
+    "id": "Microsoft.VisualStudioCode",
+    "ensure": "present"
+  },
+  {
+    "displayName": "Git",
+    "description": "Install Git",
+    "cathegory": "Dev Tools",
+    "source": "winget",
+    "id": "Git.Git",
+    "ensure": "present"
+  },
+  {
+    "displayName": "Node.js",
+    "description": "Install Node.js",
+    "cathegory": "Dev Tools",
+    "source": "winget",
+    "id": "OpenJS.Nodejs",
+    "ensure": "present"
+  },
+  {
+    "displayName": "Yarn",
+    "description": "Install Yarn",
+    "cathegory": "Dev Tools",
+    "source": "winget",
+    "id": "YarnInstaller.Yarn",
+    "ensure": "present"
+  },
+  {
+    "displayName": "Python",
+    "description": "Install Python",
+    "cathegory": "Dev Tools",
+    "source": "winget",
+    "id": "Python.Python",
+    "ensure": "present"
+  },
+  {
+    "displayName": "Docker",
+    "description": "Install Docker",
+    "cathegory": "Dev Tools",
+    "source": "winget",
+    "id": "Docker.DockerDesktop",
+    "ensure": "present"
+  },
+  {
+    "displayName": "Postman",
+    "description": "Install Postman",
+    "cathegory": "Dev Tools",
+    "source": "winget",
+    "id": "Postman.Postman",
+    "ensure": "present"
+  },
+  {
+    "displayName": "Google Chrome",
+    "description": "Install Google Chrome",
+    "cathegory": "Browsers",
+    "source": "winget",
+    "id": "Google.Chrome",
+    "ensure": "present"
+  },
+  {
+    "displayName": "Firefox",
+    "description": "Install Firefox",
+    "cathegory": "Browsers",
+    "source": "winget",
+    "id": "Mozilla.Firefox",
+    "ensure": "present"
+  },
+  {
+    "displayName": "Spotify",
+    "description": "Install Spotify",
+    "cathegory": "Media",
+    "source": "winget",
+    "id": "Spotify.Spotify",
+    "ensure": "present"
+  }
+]
