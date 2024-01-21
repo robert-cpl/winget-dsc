@@ -43,6 +43,9 @@ $toolTip = New-Object System.Windows.Forms.ToolTip
 $toolTip.BackColor = $primaryColor
 $toolTip.ForeColor = $buttonSelectedColor
 
+# Outside border thickness
+$borderThickness = 0
+
 $code = @"
 [System.Runtime.InteropServices.DllImport("gdi32.dll")]
 public static extern IntPtr CreateRoundRectRgn(int nLeftRect, int nTopRect,
@@ -65,7 +68,8 @@ $form.add_Load({
         $hrgn = $Win32Helpers::CreateRoundRectRgn(0, 0, $form.Width, $form.Height, 15, 15)
         $form.Region = [Region]::FromHrgn($hrgn)
     })
-
+    
+# Position the labels at each corner of the form
 ### TOP BAR ###
 $topBar = [Panel] @{
     BackColor = $secondaryColor;
@@ -81,6 +85,22 @@ $topBarUnderline = [Label] @{
 }
 $topBar.Controls.Add($topBarUnderline);
 
+$topBarTopBorderLine = [Label] @{
+    BorderStyle = [BorderStyle]::None;
+    Height      = $borderThickness;
+    BackColor   = $accentColor;
+    Dock        = [DockStyle]::Top;
+}
+$topBar.Controls.Add($topBarTopBorderLine)
+
+$topBarLeftBorderLine = [Label] @{
+    BorderStyle = [BorderStyle]::None;
+    Width       = $borderThickness;
+    BackColor   = $accentColor;
+    Dock        = [DockStyle]::Left;
+}
+$topBar.Controls.Add($topBarLeftBorderLine)
+
 
 # Add drag functionality to the top bar
 $topBar.Add_MouseDown( { 
@@ -91,7 +111,7 @@ $topBar.Add_MouseDown( {
 
 # Move the form while the mouse is depressed (i.e. $global:dragging -eq $true)
 $topBar.Add_MouseMove( { if ($global:dragging) {
-            $screen = [System.Windows.Forms.Screen]::PrimaryScreen.WorkingArea
+            $screen = [System.Windows.Forms.Screen]::FromControl($form).WorkingArea
             $currentX = [System.Windows.Forms.Cursor]::Position.X
             $currentY = [System.Windows.Forms.Cursor]::Position.Y
             [int]$newX = [Math]::Min($currentX - $global:mouseDragX, $screen.Right - $form.Width)
@@ -235,14 +255,24 @@ $profileButtonArea = [Panel] @{
 $form.Controls.Add($profileButtonArea)
 
 # Add 1 px right border to the profile button area
-$profileButtonAreaBorder = [Label] @{
+$profileButtonRightAreaBorder = [Label] @{
     BorderStyle = [BorderStyle]::None;
     Width       = 1;
     BackColor   = $accentColor;
     Dock        = [DockStyle]::Right;
 }
 
-$profileButtonArea.Controls.Add($profileButtonAreaBorder)
+$profileButtonArea.Controls.Add($profileButtonRightAreaBorder)
+
+# Add 1 px left border to the profile button area
+$profileButtonLeftAreaBorder = [Label] @{
+    BorderStyle = [BorderStyle]::None;
+    Width       = $borderThickness;
+    BackColor   = $accentColor;
+    Dock        = [DockStyle]::Left;
+}
+
+$profileButtonArea.Controls.Add($profileButtonLeftAreaBorder)
 
 # Create the buttons
 CreateProfileButtons($buttonNames)
@@ -257,6 +287,15 @@ $buttonContentArea = [Panel] @{
 }
 
 $form.Controls.Add($buttonContentArea)
+
+$packagesAreaRightBorder = [Label] @{
+    BorderStyle = [BorderStyle]::None;
+    Width       = $borderThickness;
+    BackColor   = $accentColor;
+    Dock        = [DockStyle]::Right;
+}
+
+$form.Controls.Add($packagesAreaRightBorder)
 
 # Create a panel that will hold the content of the selected button
 $buttonContentSearchBarArea = [Panel] @{
@@ -355,6 +394,7 @@ $searchBarPanel = [Panel] @{
     Location  = [Point]::new(($buttonContentSearchBarArea.Width / 2) - 100, 10);
     Size      = [Size]::new(300, 40);
 }
+
 # Add Reset all selections button right next to the search bar
 $resetSelectionsButton = [Button] @{
     Text      = [char]::ConvertFromUtf32(0x000021BA);
@@ -431,6 +471,31 @@ $searchBar.add_KeyDown({
 
 $searchBarPanel.Controls.Add($searchBar)
 $buttonContentSearchBarArea.Controls.Add($searchBarPanel)
+
+# Add bottom border to the searchBar
+$searchBarBottomBorderLine = [Label] @{
+    BorderStyle = [BorderStyle]::None;
+    Height      = $borderThickness;
+    BackColor   = $accentColor;
+    Dock        = [DockStyle]::Bottom;
+}
+
+$searchBarLeftBorderLine = [Label] @{
+    BorderStyle = [BorderStyle]::None;
+    Width       = $borderThickness;
+    BackColor   = $accentColor;
+    Dock        = [DockStyle]::Left;
+}
+
+$searchBarRightBorderLine = [Label] @{
+    BorderStyle = [BorderStyle]::None;
+    Width       = $borderThickness;
+    BackColor   = $accentColor;
+    Dock        = [DockStyle]::Right;
+}
+$buttonContentSearchBarArea.Controls.Add($searchBarBottomBorderLine)
+$buttonContentSearchBarArea.Controls.Add($searchBarRightBorderLine)
+$buttonContentSearchBarArea.Controls.Add($searchBarLeftBorderLine)
 
 # Store the original locations of the buttons
 $originalLocations = @{}
